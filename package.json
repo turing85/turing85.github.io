@@ -1,0 +1,14 @@
+{
+  "name": "turing-blog",
+  "description": "Marco Bungart Blog site",
+  "homepage": "https://turing85.github.io/blog/",
+  "private": true,
+  "scripts": {
+    "build": "antora antora-playbook.yml"
+  },
+  "dependencies": {
+    "@antora/lunr-extension": "~1.0.0-alpha.8",
+    "antora": "^3.1.2",
+    "asciidoctor-kroki": "^0.17.0"
+  }
+}

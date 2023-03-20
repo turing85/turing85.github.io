@@ -1,0 +1,6 @@
+name: about
+title: About
+version: ~
+start_page: me/index.adoc
+nav:
+  - modules/ROOT/nav.adoc

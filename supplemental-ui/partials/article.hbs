@@ -1,0 +1,25 @@
+<article class="doc">
+<div class="article-date-grid">
+  {{#with page.title}}
+  <div><h1>{{{this}}}</h1></div>
+  {{/with}}
+  {{#if (or page.attributes.created page.attribute.last-modified)}}
+  {{> article-dates}}
+  {{/if}}
+</div>
+{{#if page.keywords}}
+<div class="keywords-container">
+    <div class="keyword-margin">Keywords:</div>
+    <div>
+      {{#each (split page.keywords ',')}}
+      <div class="icon keyword-box keyword-margin pill">
+        <div class="keyword">{{this}}</div>
+      </div>
+      {{/each}}
+    </div>
+</div>
+{{/if}}
+{{{page.contents}}}
+{{> pagination}}
+</article>
+{{> cc-by-sa}}

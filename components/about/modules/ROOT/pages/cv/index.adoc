@@ -1,0 +1,139 @@
+= Curriculum Vitae
+
+== Personal Information
+
+[cols=4*,frame=none,grid=none]
+|===
+|Name
+|Marco Bungart
+|
+|
+
+|Place of Birth
+|Cologne
+|
+|
+
+|Nationality
+|German
+|
+|
+|===
+
+== Work Experience
+
+=== Since 12/18: Senior Software Engineer
+at link:https://www.consol.de/["ConSol, Düsseldorf (`consol.de`)", window=_blank]
+
+=== 10/2013 - 09/2018: Research Assistant / Ph.D. Stutend
+link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
+
+=== 04/2011 - 07/2013: Auxiliary Scientist
+link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+
+=== 10/2008 - 02/2010: Auxiliary Scientist
+link:https://www.bgc-jena.mpg.de["Max-Planck-Institut für Biogeochemie, Jena (`bgc-jena.mpg.de`)", window=_blank]
+
+=== 10/2004 - 06/2005: Military Service - Basic Training and Basic Military Service
+Harthbergkaserne and Rechenzentrum des Heeresamts,
+
+Schwalmstadt and Cologne
+
+== Education
+
+=== 10/2013 - 09/2018: Ph.D. (Dr. rer. nat)
+[cols=2*,frame=none,grid=none]
+|===
+a|link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
+|Final grade: "_cum laude_", 2.0
+|===
+
+=== 10/2011 - 09/2013: M.Sc. Computer Science
+[cols=2*,frame=none,grid=none]
+|===
+a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+|Final grade: 1.4
+|===
+
+=== 10/2008 - 09/2011: B.Sc. Bioinformatics
+[cols=2*,frame=none,grid=none]
+|===
+a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+|Final grade: 2.3
+|===
+
+=== 09/2005 - 01/2008: Apprenticeship IT specialist specializing in system integration
+[cols=2*,frame=none,grid=none]
+|===
+a|link:https://www.mpifr-bonn.mpg.de/["Max-Planck-Institut für Radioastronomie, Bonn (`mpifr-bonn.mpg.de`)", window=_blank]
+|Final grade: 2.0
+|===
+
+=== 08/1995 - 06/2004: Abitur (A-Level)
+link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-koeln.de`)", window=_blank]
+
+== Language Skills
+[cols=4*,frame=none,grid=none]
+|===
+|German:
+|Native language
+|
+|
+
+|English:
+|C1
+|
+|
+|===
+
+== Personal Skills
+=== Programming Languages and Frameworks
+[cols=6*,frame=none,grid=none]
+|===
+|Java:
+|●●●
+|Spring Boot:
+|●●○
+|JakartaEE:
+| ●●○
+
+|GraalVM:
+|●●○
+|Quarkus:
+|●●●
+|MicroProfile:
+|●●○
+
+|JUnit/Mockito:
+|●●●
+|Golang:
+|●●○
+|JS/TS:
+|●●○
+
+|Kubernetes:
+|●●○
+|Ansible:
+|●○○
+|ELK/EFK:
+|●●○
+
+|Scrum:
+|●●●
+|KANBAN:
+|●●○
+|LATEX:
+|●●●
+|===
+
+=== Additional Qualifiactions
+[cols=2*,frame=none,grid=none]
+|===
+|AWS Certified Developer
+|absolved 02/2020
+
+|Cisco CCNA Semester 1 to 4
+|without final exam
+
+|Driver's Licence
+|A (Motorcycle) and B (Automobile)

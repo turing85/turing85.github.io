@@ -1,0 +1,185 @@
+.fa::before {
+  padding-right: 0.3rem;
+}
+
+.fa.icon-note::before {
+  content: "\f129";
+}
+
+.fa.icon-tip::before {
+  content: "\f0eb";
+}
+
+.fa.icon-important::before {
+  content: "\f12a";
+}
+
+.fa.icon-caution::before {
+  content: "\f12a";
+}
+
+.fa.icon-warning::before {
+  content: "\f071";
+}
+
+.doc {
+  max-width: 75rem;
+}
+
+div .article-date-grid {
+  display: grid;
+  font-size: 1.5rem;
+  grid-template-columns: auto 35%;
+  margin: 1.5rem 0;
+}
+
+div .date-container {
+  color: #5d5d5d;
+  column-gap: 0.5rem;
+  display: grid;
+  font-size: .83333rem;
+  font-style: italic;
+  grid-template-columns: auto auto;
+  grid-template-rows: 1.5rem;
+  margin-left: auto;
+  margin-right: 0;
+  margin-top: 0;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+div .keywords-container {
+  color: #5d5d5d;
+  display: grid;
+  font-size: .83333rem;
+  grid-template-columns: 4.3rem auto;
+  margin: 0.75rem 0;
+}
+
+.pill {
+  border-radius: 1rem;
+}
+
+.doc .admonitionblock .icon {
+  border-radius: 1rem;
+}
+
+div .keyword-box {
+  background: #cdcdcd;
+  float: left;
+  padding: 0 0.5rem;
+}
+
+div .keyword-margin {
+  margin: 0.25rem 0.15rem;
+}
+
+div .keyword {
+  color: #5d5d5d;
+  padding: 0;
+}
+
+.imageblock.left, .imageblock.right {
+  max-width: 25%;
+}
+
+.imageblock {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.navbar-image {
+  max-width: 2rem;
+  max-height: 2rem;
+}
+
+.edit-this-page {
+  visibility: hidden;
+}
+
+.navbar-dropdown {
+  background: #191919;
+  right: 0;
+  left: auto;
+}
+
+#search-input {
+  border-radius: 1rem;
+}
+
+.navbar-end .navbar-item {
+  padding: 0.5rem 1rem;
+}
+
+.hoverable-black:hover {
+  background: #000 !important;
+}
+
+.dropdown-item {
+  width: 96%;
+  color: #fff;
+  margin: 0.2rem;
+  border-radius: 1rem;
+}
+
+.dropdown-item span.icon {
+  margin-right: 0.4rem;
+}
+
+.penpen {
+  object-fit: cover;
+  width: 375px;
+  height: 375px;
+}
+
+div.videoblock div.content iframe {
+  height: 480px;
+  width: 640px;
+}
+
+img.middle {
+  vertical-align: middle
+}
+
+div.cc {
+  height: 0;
+  visibility: hidden;
+}
+
+img.cc {
+  vertical-align: middle;
+  height: 1.5rem;
+  margin-right: 1rem  ;
+}
+
+div.admonitionblock {
+  position: relative;
+  page-break-inside: avoid;
+}
+
+.doc .admonitionblock  td.icon {
+  --webkit-transform: "";
+  transform: translate(0, 0);
+}
+
+.doc .admonitionblock td.content {
+  padding: 1.5rem 0 0 1rem;
+}
+
+div.nav-panel-explore {
+  visibility: hidden;
+}
+
+@media print {
+  div.videoblock div.content iframe, .keywords-container {
+    display: none !important;
+  }
+
+  div.cc {
+    bottom: 0;
+    right: 0;
+    height: auto;
+    position: fixed;
+    visibility: visible !important;
+  }
+}

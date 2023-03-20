@@ -1,0 +1,37 @@
+antora:
+  extensions:
+    - require: '@antora/lunr-extension'
+      languages:
+        - en
+
+site:
+  title: Marco Bungart
+  start_page: about::me/index.adoc
+  url: http://localhost:8080
+
+content:
+  sources:
+    - url: ./
+      branches: HEAD
+      start_path: components/about
+    - url: ./
+      branches: HEAD
+      start_path: components/articles
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+  supplemental_files: ./supplemental-ui
+
+runtime:
+  fetch: true
+
+asciidoc:
+  attributes:
+    kroki-fetch-diagram: true
+    page-editable: false
+    page-fileUri: false
+    page-pagination: true@
+    listing-caption: Listing
+  extensions:
+  - asciidoctor-kroki
