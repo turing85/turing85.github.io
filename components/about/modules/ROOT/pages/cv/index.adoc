@@ -22,7 +22,7 @@
 
 == Work Experience
 
-=== Since 12/18: Senior Software Engineer
+=== Since 12/2018: Senior Software Engineer
 at link:https://www.consol.de/["ConSol, Düsseldorf (`consol.de`)", window=_blank]
 
 === 10/2013 - 09/2018: Research Assistant / Ph.D. Stutend
@@ -127,14 +127,20 @@ link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-
 |===
 
 === Additional Qualifiactions
-[cols=2*,frame=none,grid=none]
+[cols=4*,frame=none,grid=none]
 |===
 |AWS Certified Developer
 |absolved 02/2020
+|
+|
 
 |Cisco CCNA Semester 1 to 4
 |without final exam
+|
+|
 
 |Driver's Licence
 |A (Motorcycle) and B (Automobile)
+|
+|
 |===

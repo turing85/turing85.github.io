@@ -1,6 +1,6 @@
 = About Me
 
-My name is Marco Bungart. Online, I go by the moniker Turing85 (xref:turing85/index.adoc[Why?]) and use the little guy in the upper left as avatar (xref:penpen/index.adoc[What's that thing?]). I am a Senior Software Engineer at link:https://www.consol.de/[`consol.de`]. I like games (digital and analog), good food (especially ramen!) and animals, especially birds.
+My name is Marco Bungart. Online, I go by the moniker Turing85 (xref:turing85/index.adoc[Why?]) and use the little guy in the upper left as avatar (xref:penpen/index.adoc[What's that thing?]). I am a Senior Software Engineer at link:https://www.consol.de/[`consol.de`, window=_blank]. I like games (digital and analog), good food (especially ramen!) and animals, especially birds.
 
 == Origins
 .Coat of Arms of the city of Cologne (Source: link:https://de.wikipedia.org/wiki/K%C3%B6lner_Wappen#/media/Datei:DEU_Koeln_COA.svg[`de.wikipedia.org`, window=_blank])
