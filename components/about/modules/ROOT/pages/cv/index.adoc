@@ -127,20 +127,17 @@ link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-
 |===
 
 === Additional Qualifiactions
-[cols=4*,frame=none,grid=none]
+[cols=3*,frame=none,grid=none]
 |===
 |AWS Certified Developer
 |absolved 02/2020
-|
 |
 
 |Cisco CCNA Semester 1 to 4
 |without final exam
 |
-|
 
 |Driver's Licence
 |A (Motorcycle) and B (Automobile)
-|
 |
 |===
