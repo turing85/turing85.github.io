@@ -1,0 +1,7 @@
+= Webcast-Reihe Krisensichere IT-Systeme, Thema 3: Application Security
+with OAuth2 and Keycloak
+Marco Bungart
+:page-created: 2023-03-21
+:keywords: oidc, rbac
+
+video::Yjgo_aFt7ww[youtube]

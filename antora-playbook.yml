@@ -17,6 +17,9 @@ content:
     - url: ./
       branches: HEAD
       start_path: components/articles
+    - url: ./
+      branches: HEAD
+      start_path: components/videos
 
 ui:
   bundle:

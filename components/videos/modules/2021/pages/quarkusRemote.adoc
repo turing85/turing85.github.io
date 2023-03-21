@@ -1,0 +1,6 @@
+= Cloud Native Applications: Remote development of Quarkus applications
+Marco Bungart
+:page-created: 2023-03-21
+:keywords: quarkus, remote-develop
+
+video::IT8GVrnmsUQ[youtube]

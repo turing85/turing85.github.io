@@ -3,9 +3,7 @@
   {{#with page.title}}
   <div><h1>{{{this}}}</h1></div>
   {{/with}}
-  {{#if (or page.attributes.created page.attribute.last-modified)}}
   {{> article-dates}}
-  {{/if}}
 </div>
 {{#if page.keywords}}
 <div class="keywords-container">

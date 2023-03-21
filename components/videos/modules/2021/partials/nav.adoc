@@ -1,0 +1,4 @@
+.2021
+* xref:2021:messaging.adoc[]
+* xref:2021:quarkusRemote.adoc[]
+* xref:2021:keycloak.adoc[]

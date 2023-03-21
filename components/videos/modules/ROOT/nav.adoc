@@ -1,0 +1,7 @@
+include::2022:partial$nav.adoc[]
+
+include::2021:partial$nav.adoc[]
+
+include::2020:partial$nav.adoc[]
+
+include::2019:partial$nav.adoc[]

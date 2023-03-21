@@ -1,0 +1,6 @@
+= Cloud Native Applications: "Messaging with Quarkus"
+Marco Bungart
+:page-created: 2023-03-21
+:keywords: quarkus, messaging, artemis
+
+video::sEpSI0qjkPo[youtube]

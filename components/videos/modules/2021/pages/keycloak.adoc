@@ -1,0 +1,6 @@
+= Krisensichere IT-Systeme, Part III: Application Security with Keycloak and Quarkus. ConSol IBM Talks
+Marco Bungart
+:page-created: 2023-03-21
+:keywords: quarkus, keycloak, rbac
+
+video::9I12YmTZeDc[youtube]

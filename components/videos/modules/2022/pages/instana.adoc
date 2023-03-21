@@ -1,0 +1,6 @@
+= Webcast ConSol + Instana: The Observability of Quarkus Applications
+Marco Bungart
+:page-created: 2023-03-21
+:keywords: quarkus, open-tracing, instana
+
+video::9U8LO54r0oQ[youtube]

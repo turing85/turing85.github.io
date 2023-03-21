@@ -1,0 +1,3 @@
+.2020
+* xref:2020:quarkus.adoc[]
+* xref:2020:oauth.adoc[]
