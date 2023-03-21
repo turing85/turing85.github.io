@@ -1,5 +1,7 @@
 <div class="date-container">
+{{#if page.author}}
 {{> author}}
+{{/if}}
 {{#if page.attributes.created}}
 {{> created-date}}
 {{/if}}
