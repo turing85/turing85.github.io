@@ -2,4 +2,4 @@
 * xref:cv/index.adoc[Curriculum Vitae]
 * xref:turing85/index.adoc[My handle]
 * xref:penpen/index.adoc[The penguin]
-* xref:blog/index.adoc[This Blog]
+* xref:blog/index.adoc[This blog]

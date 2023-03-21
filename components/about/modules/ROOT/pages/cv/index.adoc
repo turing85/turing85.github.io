@@ -25,7 +25,7 @@
 === Since 12/2018: Senior Software Engineer
 at link:https://www.consol.de/["ConSol, Düsseldorf (`consol.de`)", window=_blank]
 
-=== 10/2013 - 09/2018: Research Assistant / Ph.D. Stutend
+=== 10/2013 - 09/2018: Research Assistant / Ph.D. Student
 link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
 
 === 04/2011 - 07/2013: Auxiliary Scientist
