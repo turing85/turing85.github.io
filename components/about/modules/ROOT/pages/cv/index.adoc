@@ -70,7 +70,11 @@ a|link:https://www.mpifr-bonn.mpg.de/["Max-Planck-Institut für Radioastronomie,
 |===
 
 === 08/1995 - 06/2004: Abitur (A-Level)
-link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-koeln.de`)", window=_blank]
+[cols=2*,frame=none,grid=none]
+|===
+a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-koeln.de`)", window=_blank]
+|Final grade: 3.0
+|===
 
 == Language Skills
 [cols=4*,frame=none,grid=none]
