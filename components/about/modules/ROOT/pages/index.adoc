@@ -1,8 +1,12 @@
 = Welcome
 
-.A bonfire (Source: link:https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[`english-heritage.org.uk`])
+.A bonfire (Source: link:https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[`english-heritage.org.uk`, window=_blank])
 image::https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[bonfire]
 
-&#8230; to my blog (xref:me/index.adoc[Who am I?]). Sit down and relax, before moving on in the vibrant world that is the internet again. Maybe you are interested in some xref:articles::index.adoc[articles I wrote], or one of the xref:videos::index.adoc[talks I gave].
+&#8230; to my blog (xref:me/index.adoc[Who am I?]). Sit down and relax before moving on in the vibrant world that is the internet again. Maybe you are interested in some xref:articles::index.adoc[articles I wrote], or one of the xref:videos::index.adoc[talks I gave].
 
-When you need a companion, you can find the summon button is in the upper right corner (Socials).
+(Yes, I like the link:https://en.wikipedia.org/wiki/Soulslike[soulsborne games (`en.wikipedia.org`), window=_blank] from link:https://www.fromsoftware.jp/ww/["From Software (`fromsoftware.jp`)", window=_blank]).
+
+Please read the xref:blog/index.adoc[About page to this blog] to learn about the scope of this blog and the methodology I chose.
+
+If you have comments or questions, or want to contact me, you can find my socials in the upper right corner.
