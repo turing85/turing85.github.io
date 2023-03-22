@@ -1,0 +1,375 @@
+= Antora: Documentation made simple
+Marco Bungart
+:page-created: 2023-03-22
+:keywords: documentation, asciidoc, antora
+
+Since my blog is powered by link:https://asciidoc.org/["Asciidoc (`asciidoc.org`)", window=_blank] and link:https://antora.org/["Antora (`antora.org`)", window=_blank], I thought that this would be a good fit for a first blog article.
+
+== So what is Antora?
+Antora is a tool that allows us to convert our Asciidoc into web pages. No big deal - we can do the same with link:https://en.wikipedia.org/wiki/Markdown["Markdown (`en.wikipedia.org`)", window=_blank] and link:https://jekyllrb.com/["Jekyll (`jekyllrb.com`)", window=_blank]. GitHub even provides preconfigured jobs to compile `.md` files with jekyll, and deploy them to GitHub pages.
+
+== The benefits
+This is all true. I offer one argument for Asciidoc, and one argument for Antora. Let's start with the argument for Asciidoc.
+
+=== An argument for Asciidoc
+.PlantUML ER diagram (Source: link:https://plantuml.com/ie-diagram[`plantuml.com`, window=_blank])
+[#plant-er]
+[plantuml, role="left"]
+----
+@startuml
+
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "Entity01" as e01 {
+  *e1_id : number <<generated>>
+  --
+  *name : text
+  description : text
+}
+
+entity "Entity02" as e02 {
+  *e2_id : number <<generated>>
+  --
+  *e1_id : number <<FK>>
+  other_details : text
+}
+
+entity "Entity03" as e03 {
+  *e3_id : number <<generated>>
+  --
+  e1_id : number <<FK>>
+  other_details : text
+}
+
+e01 ||..o{ e02
+e01 |o..o{ e03
+
+@enduml
+----
+
+.PlantUML Use case diagram (Source: link:https://plantuml.com/use-case-diagram[`plantuml.com`, window=_blank])
+[#plantuml-use-case]
+[plantuml, role="right"]
+----
+@startuml
+:Main Admin: as Admin
+(Use the application) as (Use)
+
+User -> (Start)
+User --> (Use)
+
+Admin ---> (Use)
+
+note right of Admin : This is an example.
+
+note right of (Use)
+  A note can also
+  be on several lines
+end note
+
+note "This note is connected\nto several objects." as N2
+(Start) .. N2
+N2 .. (Use)
+@enduml
+----
+
+Compared to Markdown, Asciidoc has more relevant features. For example, we have the possibility to directly incorporate link:https://plantuml.com/["PlantUML (`plantuml.com`)", window=_blank] diagrams. Because often, a picture says more than a thousand words. with Asciidoc, we can define our diagrams as code, making them easy editable. Take for example the two diagrams to the left and right.
+
+Both are defined within this very document, and are editable. There is the possibility to also process PlantUML code with Jekyll through, for example, link:https://github.com/yjpark/jekyll-plantuml["Jekyll-PlantUML (`github.com`)", window=_blank], but we need to install a piece of software to compile the diagrams, and we need special syntax. With Asciidoc, the definition of a PlantUML is very similar to this of a code block:
+
+[source, asciidoc]
+------
+.PlantUML ER diagram (Source: link:https://plantuml.com/ie-diagram[`plantuml.com`, window=_blank]) <1>
+[#plant-er] <2>
+[plantuml] <3>
+----
+@startuml
+
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "Entity01" as e01 {
+  *e1_id : number <<generated>>
+  --
+  *name : text
+  description : text
+}
+
+entity "Entity02" as e02 {
+  *e2_id : number <<generated>>
+  --
+  *e1_id : number <<FK>>
+  other_details : text
+}
+
+entity "Entity03" as e03 {
+  *e3_id : number <<generated>>
+  --
+  e1_id : number <<FK>>
+  other_details : text
+}
+
+e01 ||..o{ e02
+e01 |o..o{ e03
+
+@enduml
+----
+------
+<1> Caption of the diagram
+<2> Named anchor to link to the diagram
+<3> We tell asciidoc that this is a PlantUML diagram
+
+We see that this, in deed, is quite similar to a code block. And the named anchor allows us to reference the image  <<plantuml-use-case, like this>> (`\<<plantuml-use-case, like this>>`).
+Another nice feature are cross-references to other pages, e.g. xref:about::index.adoc["to the index page", window=_blank].
+
+Asciidoc has a lot more to offer. If you are not yet convinced, I recommend taking a look at link:https://asciidoctor.org/docs/asciidoc-writers-guide["the Writer's guide (`asciidoc.org`)", window=_blank]. But enough about Asciidoc, let's move on to the main event and look at Antora.
+
+=== An argument for Antora
+The job of antora is twofold. First, it bundles different Asciidoc together, and second it converts them to HTML pages.
+
+Antora is driven by a concept of modules. To explain this in more detail, let us look at the structure of this repository at the time of writing. We start with the `about`-section of this blog:
+
+.File tree for the `about` section
+[source]
+----
+└── components
+    └── about
+        ├── antora.yml
+        └── modules
+            └── ROOT
+                ├── images
+                │   └── penpen
+                │       └── penpen.png
+                ├── nav.adoc
+                └── pages
+                    ├── blog
+                    │   └── index.adoc
+                    ├── cv
+                    │   └── index.adoc
+                    ├── index.adoc
+                    ├── me
+                    │   └── index.adoc
+                    ├── penpen
+                    │   └── index.adoc
+                    └── turing85
+                        └── index.adoc
+----
+
+The `about` directory is what is called a component in Antora. If we were use Antora to generate documentation for software components, we would have one Antora component per software component. The module is described in the `antora.yml`. Its content looks like this:
+
+.Content of `article` 's `antora.yml`
+[source]
+----
+name: about <1>
+title: About <2>
+version: ~ <3>
+start_page: index.adoc
+nav:
+  - modules/ROOT/nav.adoc <4>
+----
+<1> name to reference the module
+<2> name displayed on the web page
+<3> the version of the module. `~` denotes an unversioned module.
+<4> Asciidoc file describing the navigation menu
+
+The interesting thing about the version is that Antora components must be in git repositories. We can have multiple versions of the same component, allowing us to have documentation to different version of our software components. We will see later how we can incorporate multiple versions of a component.
+
+NOTE: I have disabled the navigation menu for version on this site, but Antora is capable of showing the versions, and provides UI elements to easily switch between versions.
+
+A component has directories to represent different modules. The standard module is called `ROOT` (which is the only module used in the `about` component). Within a module, we find more subdirectories, e.g.:
+
+- `pages` holding the actual pages in form of Asciidoc files
+- `images` holding images referenced in Asciidoc files
+- `partials` holding partial definitions, that are used elsewhere (we will see them in action soon).
+
+For an in-depth explanation, I recommend taking a look at the link:https://docs.antora.org/antora/latest/standard-directories/["corresponding documentation at `docs.antora.org`", window=_blank].
+
+Now let us look at the content of the navigation in `nav.adoc`.
+
+.Content of `nav.adoc`
+[source]
+----
+* xref:me/index.adoc[Me]
+* xref:cv/index.adoc[Curriculum Vitae]
+* xref:turing85/index.adoc[My handle]
+* xref:penpen/index.adoc[The penguin]
+* xref:blog/index.adoc[This blog]
+----
+
+The content of those files is always an unordered list. We can add non-navigational Top-level entries, which we will see soon.
+
+I already said twice that we will "__see things soon__". To fulfill this promise, we will take a look at the `video` component, which is a bit more complex. We start again by looking at the file structure (since the `articles` component is empty and mostly similar to the `videos` component, we will skip it).
+
+.File tree for the `videos` section
+[source]
+----
+├── components
+    │
+    .
+    .
+    .
+    └── videos
+        ├── antora.yml
+        └── modules
+            ├── 2019
+            │   ├── pages
+            │   │   └── jcon.adoc
+            │   └── partials
+            │       └── nav.adoc
+            ├── 2020
+            │   ├── pages
+            │   │   ├── oauth.adoc
+            │   │   └── quarkus.adoc
+            │   └── partials
+            │       └── nav.adoc
+            ├── 2021
+            │   ├── pages
+            │   │   ├── keycloak.adoc
+            │   │   ├── messaging.adoc
+            │   │   └── quarkusRemote.adoc
+            │   └── partials
+            │       └── nav.adoc
+            ├── 2022
+            │   ├── pages
+            │   │   └── instana.adoc
+            │   └── partials
+            │       └── nav.adoc
+            └── ROOT
+                ├── nav.adoc
+                └── pages
+                    └── index.adoc
+----
+
+Directory structure is mostly the same, but now we have multiple modules (one module per year), and we see some `nav.adoc`s in the `partials` folder. Let us take a look at one of them.
+
+.Content of `videos/modules/2021/partials/nav.adoc`
+[source]
+----
+.2021
+* xref:2021:messaging.adoc[]
+* xref:2021:quarkusRemote.adoc[]
+* xref:2021:keycloak.adoc[]
+----
+
+.Navigation generated from `nav.adoc`
+[#img-nav]
+image::03-22-antora/nav.png[role=right]
+
+We see something new here: the `.2021`. This is a Top level entry, and the following entries will be grouped under it. When we convert this navigation to HTML pages, it will look like shown in <<img-nav, Figure 3>>. This is a nice way to keep the navigation organized. But what makes this a partial? To answer this question, we need to take a look at the `nav.adoc` of the module, located in `ROOT/nav.adoc`. The navigation files for the other components look similar.
+
+.Content of `videos/modules/ROOT/nav.adoc`
+[source]
+----
+\include::2022:partial$nav.adoc[]
+
+\include::2021:partial$nav.adoc[]
+
+\include::2020:partial$nav.adoc[]
+
+\include::2019:partial$nav.adoc[]
+----
+
+CAUTION: The empty lines between entries are important. Removing them will result in not all entries in the navigation showing up.
+
+In this file, we bind all partial navigations of all components together, giving us a single navigation for the whole module. The final result is shown in <<img-full-nav, Figure 4>>. We can also see the uppermost entry **Video**, which is not mentioned in the `nav.adoc`. This is the name of this component, and automatically added by Antora.
+
+.Full navigation of the `videos` component
+[[img-full-nav]]
+image::03-22-antora/full-nav.png[role="right"]
+
+As we can see, Antora tries its best to fit everything where it belongs. Since this part of the post is quite screenshot-heavy, I am not totally satisfied with the layout. on the other hand, for a minimal configuration approach, it is good.
+
+At the start of this subsection, we said that antora has two jobs: binding different sources together, and converting them to HTML. Up until now, we have taken a look at the first part. We are still missing the "binding together" of all those components, and I also said that antora can pull in content from multiple repositories. And we have not yet talked about generating HTML pages. Fortunately, most of this is done through a single YAML file, the Antora playbook. For this page, we find the `antora-playbook.yml` in the root of the project. Let us take a look at its content to learn how it works.
+
+.Content of `antora-playbook.yml`
+[source]
+----
+antora:
+  extensions: <1>
+    - require: '@antora/lunr-extension'
+      languages:
+        - en
+
+site:
+  title: Marco Bungart
+  start_page: about::index.adoc
+  url: http://localhost:8080
+
+content:
+  sources: <2>
+    - url: ./
+      branches:
+        - HEAD
+      start_path: components/about
+    - url: ./
+      branches:
+        - HEAD
+      start_path: components/articles
+    - url: ./
+      branches:
+        - HEAD
+      start_path: components/videos
+
+ui:
+  bundle: <3>
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+  supplemental_files: ./supplemental-ui <4>
+
+runtime:
+  fetch: true
+
+asciidoc:
+  attributes: <5>
+    kroki-fetch-diagram: true
+    page-editable: false
+    page-fileUri: false
+    page-pagination: true@
+    listing-caption: Listing
+  extensions:
+  - asciidoctor-kroki
+----
+
+<1> Extensions to load. In this case, we load the link:https://gitlab.com/antora/antora-lunr-extension["Antora Lnur Extension (`gitlab.com`)", window=_blank], which provides search capabilities
+<2> Configuration of all sources (components) to load with their respective branches
+<3> bundle to style the UI. Here, we use the default bundle
+<4> directory holding UI customizations
+<5> attributes added to each asciidoc document
+
+While somewhat lengthy, the file is actually rather straight forward. The `antora`-block configures extensions to load. The `site` block configures the base setup for the page, most notably the start page. The syntax here is `<component-name>::[<directory>/*]<file>`. The `ui`-section configures the UI. Antora allows a great deal of customization through the `supplemental_files` directory. We will not discuss this here, but suffice to say: when I designed this blog, this was the part I spent the most time on 🙂. The `asciidoc` section configures everything necessary for Asciidoc. Here, we use it to add some attributes to all pages. A neat little trick is the `page-pagination: true@` entry. The entry `page-pagination` controls whether the next- and prev-links at the bottom of the page are available. While I want them on most pages, I do want the flexibility to deactivate them on some pages. So the default is `true` and the `@` at the end allows us to override it on a per-page basis.
+
+Finally, there is the `content` section. This is the glue where all modules ar bound together. Each entry consists of a URL, a list of branches and a start path. The URL must point to a git repository. As we can see: it can point to the repository we are currently in. But it can also point to other repositories. This is the magic that allows us to bind together documentation from different repositories. A more complete example can be found in the link:https://github.com/quarkiverse/quarkiverse-docs/blob/main/antora-playbook.yml["Antora playbook for all quarkus quarkiverse documentations (`github.com`)", window=_blank]. The important part is: every component that has its own `antora.yml` must be listed here, with the URL pointing to the git repository it resides in, and the `start_path` holding the directory containing the `antora.yml`, relative to the directory.
+
+=== Building the pages
+We still have to actually generate the HTML pages from the Asciidoc documents. For this, we use link:https://www.npmjs.com/[" `npm` (`nmpjs.com`)", window=_blank]. Initially, we have to install the Antora npm package. A guide can be found in link:https://docs.antora.org/antora/latest/install/install-antora/["The official Antora documentation (`docs.antora.org`)", window=_blank]. When we use Antora extensions, the extensions have be installed through `npm`. For the `lunr` extension, the installation command looks like this:
+
+.`npm` command to install `lunr`
+[source, bash]
+----
+npm i antora @antora/lunr-extension
+----
+
+When the setup is done, we can build the pages by executing
+
+.Build Documentation pages
+[source, bash]
+----
+npx antora antora-playbook.yml
+----
+
+The generated pages will be stored in `build/site` and are then ready to be deployed.
+
+=== Is there more?
+Yes. Much more. Antora is rich. I started looking into it about a week ago, and this blog is what I came up with since then. There are different UI themes, although I am quite satisfied with the current UI (only thing missing for me personally is a night mode toggle). I plan to use Antora for my personal projects. I also plan recommending it in customer projects. Having a centralized documentation of software modules is a tremendous benefit, especially for colleagues working in operations.
+
+=== Antora in the wild
+If you want to see Antora in action, used for its designed purpose, I recommend taking a look at link:https://quarkiverse.github.io/quarkiverse-docs["The documentation page of the quarkiverse extensions (`quarkiverse.github.io`)", window=_blank].
+
+== Conclusion
+We have talked about the arguments for Asciidoc and Antora, when compared to Markdown and Jekyll. We discussed how an Antora project is structured, what components and modules are, and how components are bound together through a playbook. I hope that this article gave you some insight into Antora and the features it provides
