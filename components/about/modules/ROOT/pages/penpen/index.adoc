@@ -1,6 +1,6 @@
 = What's with the penguin?
 
-.Pen² (Source: link:https://wiki.evageeks.org/images/9/99/02_C152_penpen.jpg[`wiki.evageeks.org`, window=_blank], Copyright (C) http://www.gainax.co.jp/wp/["Studio Gainax (`gainax.co.jp`)", window=_blank] and link:https://www.khara.co.jp/[Studio Khara (`khara.co.jp`)]
+.Pen² (Source: link:https://wiki.evageeks.org/images/9/99/02_C152_penpen.jpg[`wiki.evageeks.org`, window=_blank], Copyright (C) http://www.gainax.co.jp/wp/["Studio Gainax (`gainax.co.jp`)", window=_blank] and link:https://www.khara.co.jp/["Studio Khara (`khara.co.jp`)", window=_blank]
 image::penpen/penpen.png[Pen²]
 
 This is Pen² (spoken: "Pen Pen", original: "ペンペン"). He is a new species of penguin, created through genetic experimentation (link:https://wiki.evageeks.org/Pen_Pen[`wiki.evageeks.org`, window=_blank]). He is a minor character in the anime link:https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion["Neon Genesis Evangelion (`en.wikipedia.org`)", window=_blank] (original: "新世紀エヴァンゲリオン"). I have used him as my avatar for quite some time now. In fact, it is so long that I cannot say exactly why I chose him. Maybe I chose him due to the influence the anime had on me as an adolescent. Maybe it is a subconscious nod to https://www.gentoo.org/["Gentoo (`gentoo.org`)", window=_blank], the first linux distribution I used. In short: I cannot remember and say for sure.

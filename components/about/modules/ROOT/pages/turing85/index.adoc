@@ -11,7 +11,7 @@ image::https://upload.wikimedia.org/wikipedia/commons/7/79/Alan_Turing_az_1930-a
 
 Although Turing was the central figure in the movies link:https://www.imdb.com/title/tt0157583/?ref_=nv_sr_srsg_0["Enigma (2001, `imdb.com`)", window=_blank] and link:https://www.imdb.com/title/tt2084970/?ref_=nv_sr_srsg_0["The Imitation Game (2014, `imdb.com`)", window=_blank], most people do not know about him.
 
-Most computer scientists know him for the invention of the xref:https://en.wikipedia.org/wiki/Turing_machine[Turing machine (`en.wikipedia.org`)] and his proof that the https://en.wikipedia.org/wiki/Halting_problem[Halting problem (`en.wikipedia.org`)] is - without loss of generality - not solvable.
+Most computer scientists know him for the invention of the link:https://en.wikipedia.org/wiki/Turing_machine["Turing machine (`en.wikipedia.org`)", window=_blank] and his proof that the https://en.wikipedia.org/wiki/Halting_problem["Halting problem (`en.wikipedia.org`)", window=_blank] is - without loss of generality - not solvable.
 
 Some people may know that he was a major figure in decrypting the code of the link:https://en.wikipedia.org/wiki/Enigma_machine[Enigma (`en.wikipedia.org`), window=_blank]. Together with his team at Bletchley Park, they constructed the https://en.wikipedia.org/wiki/Bombe["bombe (`en.wikipedia.org`)", window=_blank]. This, combined with the fact that the enigma was not able to encrypt a letter to itself, were the key ingredients that allowed the allies to decipher the german messages. In return, this discovery probably saved thousands, https://www.bbc.com/news/technology-18419691[if not millions (`bbc.com`)], of lives.
 
