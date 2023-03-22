@@ -6,7 +6,7 @@ antora:
 
 site:
   title: Marco Bungart
-  start_page: about::me/index.adoc
+  start_page: about::index.adoc
   url: http://localhost:8080
 
 content:
