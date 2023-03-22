@@ -22,8 +22,8 @@ ____
 
 In 8th grade, we had Electronic data processing at school. It boiled down to Excel and Word. I remember it being interesting at first (especially Excel), but then boring.
 
-.Logo Programming Language (Source: link:http://sydlexia.com/imagesandstuff/logo/square.png[`sydlexia.com`, window=_blank])
-image::http://sydlexia.com/imagesandstuff/logo/square.png[logo,role="right"]
+.Logo Programming Language (Source: link:https://sydlexia.com/imagesandstuff/logo/square.png[`sydlexia.com`, window=_blank])
+image::https://sydlexia.com/imagesandstuff/logo/square.png[logo,role="right"]
 
 In 10th grade, I had the luck to get in to the computer science class of our school (and the neighboring school, we shared a campus). This was, I would say, the first time that I "_wrote code_". My first programming language was link:https://el.media.mit.edu/logo-foundation/what_is_logo/logo_programming.html["Logo (`el.media.mit.edu`)", window=_blank]. The language has all constructs that are necessary to get started with programming. But most importantly, Logo gives instant visual feedback. I fondly remember typing in some code to draw a link:https://en.wikipedia.org/wiki/Regular_polygon["regular polygon (`en.wikipedia.org`)", window=_blank] just to find out that I calculated the angles wrong, and my pentagon became a pentagram.
 
