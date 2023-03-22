@@ -130,7 +130,7 @@ a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`ev
 |●●●
 |===
 
-=== Additional Qualifiactions
+=== Additional Qualifications
 [cols=3*,frame=none,grid=none]
 |===
 |AWS Certified Developer
