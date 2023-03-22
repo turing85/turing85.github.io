@@ -12,13 +12,16 @@ site:
 content:
   sources:
     - url: ./
-      branches: HEAD
+      branches:
+        - HEAD
       start_path: components/about
     - url: ./
-      branches: HEAD
+      branches:
+        - HEAD
       start_path: components/articles
     - url: ./
-      branches: HEAD
+      branches:
+        - HEAD
       start_path: components/videos
 
 ui:
