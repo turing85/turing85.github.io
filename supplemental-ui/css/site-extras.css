@@ -171,6 +171,10 @@ div.nav-panel-explore {
 }
 
 @media print {
+  @page {
+    margin-bottom: 1cm;
+  }
+
   div.videoblock div.content iframe, .keywords-container {
     display: none !important;
   }
