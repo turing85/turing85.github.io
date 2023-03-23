@@ -1,1 +1,3 @@
+= Articles
+
 include::2023:partial$nav.adoc[]
