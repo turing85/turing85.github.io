@@ -1,0 +1,40 @@
+= Containers 101: What are containers? 🤔
+Marco Bungart
+:page-created: 2023-03-23
+:keywords: containers
+
+== Motivation
+Containers are - by no means - a new technology. But for someone new to the field, they can be quite daunting. I myself learn most efficient when I have some explanation and some samples to start with, and then explore on my own from there on. This is what I would like to achieve with this article - or rather series of articles - for you. Let me guide you with some explanation and examples, so you can continue exploring on your own.
+
+In this article, we will explore the concepts of containers. We will discuss how they differentiate from virtualization, and we will peek under the hood to see how they work. We will also discuss what possibilities we have to build and run containers and their up- and downsides. We will not yet write or run any containers, only explain. The actual doing will be done in subsequent articles.
+
+== What is a container, and what is it not?
+Containers are often introduced as "a lightweight form of virtualization". In my opinion, this explanation does more harm than good.
+
+When we virtualize something, we typically virtualize everything - Hardware and Software (including the operating system). So a virtual machine running Windows, for example, not only virtualizes the Windows OS, but also all hardware componentsfootnote:[There is the possibility to pass-through actual hardware to virtual machines]. This is not inherently bad. There is a reason why link:https://www.geeksforgeeks.org/virtual-machine-for-malware-analysis/["they are often used to analyze malware (`geesforgeeks.org`)", window=_blank]: they provide very good isolation (but be warned: link:https://security.stackexchange.com/questions/23452/is-it-safe-to-use-virtual-machines-when-examining-malware["it is not perfect (`security.stackexchange.com`)", window=_blank]). But since there is link:https://en.wikipedia.org/wiki/No_free_lunch_theorem["no free lunch (`en.wikipedia.org`)", window=_blank], we have to pay for this level of isolation. The currency used is cpu cycles and memory.
+
+Containers work quite differently. They can use virtualization as well, but for different things (mostly networking). The container in and of itself does not virtualize anything, quite the opposite: link:https://www.redhat.com/en/topics/containers/whats-a-linux-container#just-virtualization["it uses the kernel of the host (`redhat.com`)", window=_blank]. But wait! Isn't this dangerous? Doesn't that mean that a process, running in a container, can access the host? A-ha. That is where link:https://en.wikipedia.org/wiki/Linux_namespaces["Linux namespaces (`en.wikipedia.org`)", window=_blank] come into play. They allow isolation and partition of resources, such that two processes see different resources, or maybe even the same resource, but with different permissions. Together with link:https://en.wikipedia.org/wiki/Cgroups["Linux Control Groups (`en.wikipedia.org`)", window=_blank], which allow to limit resource usage, they build the base for container technology. If you want to dive deeper, I recommend watching link:https://www.youtube.com/watch?v=oSlheqvaRso["Liz Rice's talk from the 2019 Container Stack conference (`youtube.com`)", window=_blank]. In this 40-minute demo, Liz demonstrates how to use namespaces, control groups and some other elements to write a container runtime in link:https://go.dev/["Go (`go.dev`)", window=_blank].
+
+== Why use containers?
+
+=== Works on my machine! (the view of a developer)
+We understand on a fundamental level how containers work. But what do they actually do? To answer this, let me ask you another question.
+
+Have you ever worked on an application, and something did not work (maybe a test, or a new feature)? And you asked your colleagues, but all you got was a "work on my machine"? This is one problem that containers try to solve. A container provides a known environment. For example, a container may have a certain version of `glibc` installed, and a piece of software either works with this version of `glibc`, or it does not. If the entire development team runs the application form within the container, then it either works for all team members, or for none. Or at least it should. To achieve this, we have to talk about another concept. Containers are &#8230;
+
+=== Cattle, not pet (the view of an operator)
+In ye olden days, we had our mail server. And we provided sacrifices to it - especially before holidays - so the mail d(a)emon was pleased, and the server kept running. Same goes for the web server. And the file server. And that server of this one department that always fails in the middle of the night. In short: servers were pets, we cared for them.
+
+.Appeasing the mail d(a)emon, post 2000, colorized (Source: link:https://www.reddit.com/r/pcmasterrace/comments/3piyyb/it_team_before_going_on_holiday/[`reddit.com`, window=_blank])
+image::https://external-preview.redd.it/a_gU3NIkGNIBOOH8xzyRbhMtRA_MpTwr0NGddtXtOEU.jpg?auto=webp&v=enabled&s=9458e94d46f6f650bbce207a3b8e89117089257c[]
+
+With containers, the story is different. Of course, we still need some hardware the containers run on. And we still need to care for this hardware. But we do not have dedicated hardware for the mail server, or the file server. We have a pool of machines, executing containers. Usually, we have more machines than we need, so we can compensate if one or more of our machines fails. The mail server is one of the containers, as is the file server. If one of the container is behaving abnormally, we kill and replace it. Containers are cattlefootnote:[I do not agree with the concept of terminating live stock because "it is sick".]. The phrased was link:http://cloudscaling.com/blog/cloud-computing/the-history-of-pets-vs-cattle/["most probably coined by Bill Baker between 2011 and 2012 (`cloudscaling.com`)", window=_blank].
+
+Replacing the container may fix the issue because containers are ephemeral; if we replace a container, it always starts in the same state. All changes done previously are gone. While this presents certain challenges (who can we then persist anything if containers are ephemera?), which we will discuss in another article. But for now, we can analyze what benefits this provides.
+
+Let us assume that we have a piece of software that interacts with a database, and that we need a database to execute some  tests. Instead of documenting somewhere what database in what version we have to use, we can provide a container with the right database preinstalled. We can also provide a startup script that is executed when the container starts, to create users, schemas, tables, and maybe even some test data that is needed. Before we run the tests, we start the container, so that the tests can use the database. When the tests are done, we stop the container. Any time we start the container, we start with the same, known state. When we manipulate data in the container, the changes are discarded when the container is stopped.
+
+Containers also simplify the distribution/delivery of software. We can just bake software - with all its dependencies - in a container and distribute this container.
+
+== Conclusion
+We have discussed the difference between virtualization and containers, and through this, we took a look on how containers actually work under the hood. We also talked about the benefits containers provide, from an operative perspective and from a development perspective. Armed with this knowledge, we can take a look on how to create and distribute containers - but this will be an article for another day 🙂.
