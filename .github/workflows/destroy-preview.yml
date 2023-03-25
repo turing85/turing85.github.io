@@ -5,7 +5,7 @@ on:
   pull_request_target:
     types: [closed]
 
-steps:
+jobs:
   destroy-preview:
     name: Destroy Preview on surge.sh
     runs-on: ubuntu-latest
