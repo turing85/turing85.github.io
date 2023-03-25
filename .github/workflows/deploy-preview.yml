@@ -26,7 +26,7 @@ jobs:
       - name: Get PR number
         id: get-pr-number
         run: |
-          pr_number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
+          pr_number="$(echo "${{ github.head_ref }}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
           echo "pr-number=${pr_number}" | tee "${GITHUB_OUTPUT}"
       - name: Download artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
         uses: actions/github-script@v3.1.0
