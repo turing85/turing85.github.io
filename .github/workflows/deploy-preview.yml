@@ -49,7 +49,7 @@ jobs:
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/github-pages.zip', Buffer.from(download.data));
       - name: Unzip Artifact
-        run: unzip pr.zip
+        run: unzip github-pages.zip
       - name: Deploy PR ${{ steps.get-pr-number.outputs.pr-number }} to Surge
         uses: dswistowski/surge-sh-action@v1
         with:
