@@ -16,8 +16,8 @@ steps:
       - name: Get PR number
         id: get-pr-number
         run: |
-          pr-number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
-          echo "pr-number=${pr-number}" | tee "${GITHUB_OUTPUT}"
+          pr_number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
+          echo "pr-number=${pr_number}" | tee "${GITHUB_OUTPUT}"
       - name: Destroy from Surge
         uses: nelonoel/surge-sh-teardown@v1.0.4
         with:
