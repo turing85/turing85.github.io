@@ -13,17 +13,40 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Download pr-number artifact
+        uses: actions/github-script@v3.1.0
+        with:
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr-number"
+            })[0];
+            var download = await github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/pr-number.zip', Buffer.from(download.data));
+      - name: Unpackage pr-number Artifact
+        run: |
+          unzip pr-number.zip
       - name: Get PR number
         id: get-pr-number
         run: |
-          pr_number="$(echo "${{ github.head_ref }}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
-          echo "pr-number=${pr_number}" | tee "${GITHUB_OUTPUT}"
-      - name: Destroy from Surge
-        uses: nelonoel/surge-sh-teardown@v1.0.4
-        with:
-          template: turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
-          login: ${{ secrets.SURGE_LOGIN }}
-          token: ${{ secrets.SURGE_TOKEN }}
+          echo "pr-number=$(cat pr-number.txt)" | tee "${GITHUB_OUTPUT}"
+          rm -rf pr-number.txt
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+      - name: Install surge
+        run: npm install --global surge
+      - name: Destroy PR ${{ steps.get-pr-number.outputs.pr-number }} from Surge
+        run: surge teardown turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
       - name: Delete PR status comment on success
         uses: actions-cool/maintain-one-comment@v3.0.0
         with:

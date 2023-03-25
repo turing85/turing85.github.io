@@ -8,6 +8,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Get PR number
+        id: get-pr-number
+        run: |
+          pr_number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
+          mkdir -p build/site
+          echo "pr-number=${pr_number}"
+          echo "${pr_number}" > "pr-number.txt"
+      - name: Upload PR number artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-number
+          path: pr-number.txt
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Antora Build

@@ -17,18 +17,41 @@ jobs:
     name: Deploy Preview to surge.sh
     environment:
       name: surge.sh
-      url: https://https://turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
+      url: https://turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
     runs-on: ubuntu-latest
     if: >
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Download pr-number artifact
+        uses: actions/github-script@v3.1.0
+        with:
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr-number"
+            })[0];
+            var download = await github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/pr-number.zip', Buffer.from(download.data));
+      - name: Unpackage pr-number Artifact
+        run: |
+          unzip pr-number.zip
       - name: Get PR number
         id: get-pr-number
         run: |
-          pr_number="$(echo "${{ github.head_ref }}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
-          echo "pr-number=${pr_number}" | tee "${GITHUB_OUTPUT}"
-      - name: Download artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
+          echo "pr-number=$(cat pr-number.txt)" | tee "${GITHUB_OUTPUT}"
+          rm -rf pr-number.txt
+      - name: Download github-pages artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
         uses: actions/github-script@v3.1.0
         with:
           script: |
@@ -48,17 +71,16 @@ jobs:
             });
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/github-pages.zip', Buffer.from(download.data));
-      - name: Unpackage Artifact
+      - name: Unpackage github-pages Artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
         run: |
           unzip github-pages.zip
           tar -xvf artifact.tar
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+      - name: Install surge
+        run: npm install --global surge
       - name: Deploy PR ${{ steps.get-pr-number.outputs.pr-number }} to Surge
-        uses: dswistowski/surge-sh-action@v1
-        with:
-          domain: turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
-          project: '.'
-          login: ${{ secrets.SURGE_LOGIN }}
-          token: ${{ secrets.SURGE_TOKEN }}
+        run: surge . turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
       - name: Update PR status comment on success
         uses: actions-cool/maintain-one-comment@v3.0.0
         with:
