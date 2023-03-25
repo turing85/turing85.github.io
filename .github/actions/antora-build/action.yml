@@ -1,0 +1,23 @@
+name: Antora Build
+
+description: |
+  Build the antora project defined in `antora-playbook.yml`
+
+runs:
+  using: composite
+
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Install Antora and the Antora Lunr Extension
+      shell: bash
+      run: npm i antora @antora/lunr-extension
+    - name: Generate Site
+      shell: bash
+      run: npx antora antora-playbook.yml
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: build/site

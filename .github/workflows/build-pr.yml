@@ -1,0 +1,14 @@
+name: Build PR
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Antora Build
+        uses: ./.github/actions/antora-build

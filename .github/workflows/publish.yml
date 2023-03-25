@@ -1,3 +1,5 @@
+name: Publish
+
 on:
   workflow_dispatch:
   push:
@@ -14,18 +16,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Install Antora and the Antora Lunr Extension
-        run: npm i antora @antora/lunr-extension
-      - name: Generate Site
-        run: npx antora antora-playbook.yml
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: build/site
+      - name: Antora Build
+        uses: ./.github/actions/antora-build
   deploy:
     needs:
       - build

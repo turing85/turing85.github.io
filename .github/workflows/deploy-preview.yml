@@ -1,0 +1,69 @@
+name: Deploy Preview
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Build PR"
+    types:
+      - completed
+
+permissions:
+  actions: write
+  pull-requests: write
+
+jobs:
+  deploy-preview:
+    name: Deploy Preview to surge.sh
+    environment:
+      name: surge.sh
+      url: https://https://turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Get PR number
+        id: get-pr-number
+        run: |
+          pr-number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
+          echo "pr-number=${pr-number}" | tee "${GITHUB_OUTPUT}"
+      - name: Download artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
+        uses: actions/github-script@v3.1.0
+        with:
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "github-pages"
+            })[0];
+            var download = await github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/github-pages.zip', Buffer.from(download.data));
+      - name: Unzip Artifact
+        run: unzip pr.zip
+      - name: Deploy PR ${{ steps.get-pr-number.outputs.pr-number }} to Surge
+        uses: dswistowski/surge-sh-action@v1
+        with:
+          domain: turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
+          project: './build/site'
+          login: ${{ secrets.SURGE_LOGIN }}
+          token: ${{ secrets.SURGE_TOKEN }}
+      - name: Update PR status comment on success
+        uses: actions-cool/maintain-one-comment@v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            🎊 PR Preview ${{ github.sha }} has been successfully built and deployed to https://turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
+            <img width="300" src="https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png">
+            <!-- Sticky Pull Request Comment -->
+          body-include: '<!-- Sticky Pull Request Comment -->'
+          number: ${{ steps.get-pr-number.outputs.pr-number }}

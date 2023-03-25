@@ -1,0 +1,32 @@
+name: Destroy Preview
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types: [closed]
+
+steps:
+  destroy-preview:
+    name: Destroy Preview on surge.sh
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Get PR number
+        id: get-pr-number
+        run: |
+          pr-number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
+          echo "pr-number=${pr-number}" | tee "${GITHUB_OUTPUT}"
+      - name: Destroy from Surge
+        uses: nelonoel/surge-sh-teardown@v1.0.4
+        with:
+          template: turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
+          login: ${{ secrets.SURGE_LOGIN }}
+          token: ${{ secrets.SURGE_TOKEN }}
+      - name: Delete PR status comment on success
+        uses: actions-cool/maintain-one-comment@v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.get-pr-number.outputs.pr-number }}
+          delete: true
