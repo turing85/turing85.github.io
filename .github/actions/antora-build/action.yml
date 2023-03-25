@@ -11,9 +11,9 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-    - name: Install Antora and the Antora Lunr Extension
+    - name: Install Asciidoctor, Antora and further dependencies
       shell: bash
-      run: npm i antora @antora/lunr-extension
+      run: npm i antora @antora/lunr-extension asciidoctor @asciidoctor/tabs
     - name: Generate Site
       shell: bash
       run: npx antora antora-playbook.yml

@@ -1,0 +1,42 @@
+@startuml
+!include <material/dots_vertical>
+!include <material/engine>
+!include <material/file>
+!include <material/image_area>
+!include <material/image_multiple>
+
+skinparam rectangle {
+  BackgroundColor #ffffff
+}
+
+left to right direction
+
+rectangle more #line:white [
+  <$ma_dots_vertical>
+
+  containerfile
+  <$ma_file>
+]
+
+rectangle containerimage [
+  container image
+  <$ma_image_area>
+]
+
+rectangle registry [
+  image registry
+  <$ma_image_multiple>
+]
+
+rectangle container [
+  container
+  <$ma_play>
+]
+
+more --> containerimage: engine\n<$ma_engine>\nbuilt to
+
+containerimage --> registry: pushed to
+
+registry --> container: engine\n<$ma_engine>\npulls and starts a
+
+@enduml

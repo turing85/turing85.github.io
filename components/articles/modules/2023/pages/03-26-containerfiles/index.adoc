@@ -1,0 +1,395 @@
+= Containers 101: Containerfiles 🗒
+Marco Bungart
+:page-created: 2023-03-26
+:keywords: containers
+
+== Motivation
+In the xref:03-23-what-are-containers/index.adoc[previous article of this series], we explored containers as a concept, how they differ from virtual machines and how they are realized on a high level. In this article we will see how containers are defined.
+
+== Preparation
+If you want to follow along, you need a means to build container images from containerfiles. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank].
+
+== Terminology
+You may notice that this article is named "containerfiles", and you may have heard the term "dockerfile". Right now, they are synonyms. I prefer using the term "containerfile" since it is provider-independent.
+
+=== Where does the term "dockerfile" 🐋 come from?
+As I have stated above, Docker provides a container engine, but it is far from the only one. Other popular examples are link:https://github.com/opencontainers/runc["runC (`github.com`)", window=_blank], link:https://containerd.io/["containerd (`containerd.io`)", window=_blank], and link:https://cri-o.io/["cri-o (`crio.io`)", window=_blank]. Interoperability is governed by the link:https://opencontainers.org/["Open Container Initiative (short: __OCI__, `opencontainers.org`)", window=_blank]. Docker was (and most probably still is) the most popular container engine in a development setting. For a cluster setting, however, it is not so clear. link:https://kubernetes.io/["Kubernetes (`kubernetes.io`)", window=_blank], for example, link:https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/["removed support for Docker back in 2020 (`kubernetes.io`)", window=_blank]. In any case, its dominant position in the early days gave rise to the term "dockerfile".
+
+== Lifecycle of a container 🗄️
+To understand what a containerfile actually **is**, we need to understand the lifecycle of containers. xref:plant-lifecycle[Figure 1] depicts the lifecycle of a container.
+
+.Lifecycle of a container
+[#plant-lifecycle]
+[plantuml, link=self]
+----
+include::attachment$03-26-containerfiles/container-lifecycle.puml[]
+----
+
+The central piece is the container image. The container image is stored in a registry. The container engine pulls images from registries and executes them. A containerfile is one way to produce a container, there are other ways. Only when a container image has been created and pushed to a registry can the container image pull the image from the registry and start a container from the image.
+
+Now let us take a look at how to create a container from a containerfile.
+
+== The containerfile 🗎
+
+A typical containerfile looks as follows:
+
+.A typical containerfile
+[source, docker]
+----
+include::example$03-26-containerfiles/Containerfile[]
+----
+
+Before we look at what every single line does, we take a look at the anatomy of each line.
+
+First of, a line starting with a `#` is a comment. All lines start with an instruction, written in uppercase. A full list of instructions can be found at link:https://docs.docker.com/engine/reference/builder/#run["the corresponding docker documentation page (`docs.docker.com`)", window=_blank]. The instruction is followed by the arguments for the instruction. Instructions can have multiple arguments.
+
+=== The base image
+Almostfootnote:[We will see cases where a containerfile does not start with a `FROM` in a later tutorial] every containerfile starts with a link:https://docs.docker.com/engine/reference/builder/#from[" `FROM` (`docs.docker.com`)", window=_blank]. This is the containerfile we base our image off offootnote:[There is the possibility to start with a blank containerfile. In this case, we would use `FROM scratch`, but this is an advanced topic we will not discuss here.]. The image name is divided in three parts:
+
+* the name of the image (allowed characters are `[a-zA-Z0-9/_-]`)
+* an optional separator, either `:` or `@`
+* a tag or digest, if a separator is given (allowed characters are `[a-zA-Z0-9/_-]`)
+
+If the separator `:` is used, the part afterwards will be interpreted as a tag. Image tags are similar to tags in docker: the reference a specific image at one point in time, but they might reference different images over time. For example, the tag `22.04` of image `ubuntu` might change as new security patches get available.
+
+If the separator `@` is used, the part afterwards is interpreted as digest. A digest takes the form of `sha:<digest>`. An image digest will always reference the exact same image.
+
+If no separator is given, then the special tag `latest` is assumed. For every image, the tag `latest` points to the latest build of that image, that has no explicit tag (we will discuss tags later).
+
+=== Labels
+Looking at our containerfile, the next instruction is link:https://docs.docker.com/engine/reference/builder/#label[" `LABEL` (`docs.docker.com`)", window=_blank]. Labels are a way to add meta information (e.g. the name and contact information) of the maintainer. They do not change the behaviour of the actual image. Eac label is a `key=value` pair, and we can add multiple labels at once. There are link:https://github.com/opencontainers/image-spec/blob/main/annotations.md["standardaized labels for certain purposes (`github.com`)", window=_blank], e.g. `org.opencontainers.image.authors` and `org.opencontainers.image.licenses`. We can, of course, add custom labels. And we also see that we can omit the quotations around the value if the value does not include a space.
+
+=== The `RUN` instruction
+The link:https://docs.docker.com/engine/reference/builder/#run[" `RUN` instruction (`docs.docker.com`)", window=_blank] is one of the most common instructions we see within a containerfile. It allows us to run a command in the container when the container is built into an image (we call this the __container build time__). In our containerfile, we create a new user through the link:https://linux.die.net/man/8/useradd[" `useradd` command (`die.net`)", window=_blank]
+
+We will skip the description of the link:https://docs.docker.com/engine/reference/builder/#user[" `USER` instruction (`docs.docker.com`)", window=_blank].
+
+=== Setting the current work directory
+This is another common instruction. While the link:https://docs.docker.com/engine/reference/builder/#workdir[" `WORKDIR` instruction (`docs.docker.com`)", window=_blank] is simple in its use, it is essential to understand what a containerfile does when reading one. All subsequent commands are executed relative to the last `WORKDIR`. Notice that a `WORKDIR` can be set to a relative path, i.e. to the previous `WORKDIR`.
+
+=== Getting files into the container
+There are several ways to get files into a container. One of the most common ones is the link:https://docs.docker.com/engine/reference/builder/#copy[" `COPY` instruction (`docs.docker.com`)", window=_blank]. It is one of the more complex instructions. We can change the user and the file permissions through `--chown=...` and `chmod=...`. We can define multiple sources to copy. Each source can be a file or a directory. If the source is a directory, then the content of the directory will be copied, not the directory itself.
+
+On top of this, we can use wildcards (`?` for a single character, `*` for any number of characters).
+
+For the target, we can either define a (path to a) file name, or a directory. If we define more than one source, the target must be a directory.
+
+The full semantics can only be explained when we take a look at xref:build-images[how to build images], which we will do shortly, so keep on reading.
+
+=== The `ENTRYPOINT`, or what to do when the container starts
+It is not strictly necessary to define what a container should do when it starts. In fact, the base image we are using (`Ubuntu:22.04`) does - in fact not define anything to do at container startup. Most containers, however, fulfill a specific purpose. They might provide a database, or a webserver. Thus, it is a good idea to start this service automatically when the container starts. This is normally achieved through either an link:https://docs.docker.com/engine/reference/builder/#entrypoint[" `ENTRYPOINT` (`docs.docker.com`), window=_blank], a link:https://docs.docker.com/engine/reference/builder/#cmd[" `CMD' (`docs.docker.com`), window=_blank] or both. The specifics of `ENTRYPOINT`, `CMD`, as well as the interaction of both will be discussed in a separate article. For now, we just look at a single `ENTRYPOINT`.
+
+The first thing we see is that the `ENTRYPOINT` is an array. The second thing we see is that we do not simply call the script we want to start, but run it through `/bin/bash -c ...`, i.e. the first argument afterwards will be read, and all other arguments will be treated as parametersfootnote:[The `"-c"` is not strictly necessary in our example, but commonly used. Thus, I decided to include it here]. The third thing we notice is that each argument is a separate array entry.
+
+[#build-images]
+== Building images
+Now that we have take a look at the containerfile, we will build the containerfile. We can find the sources link:https://github.com/turing85/article-03-26-containerfiles["here (`github.com`)", window=_blank]. We clone the project and switch in the root directory:
+
+.Cloning the project
+[source, bash]
+----
+git clone git@github.com:turing85/article-03-26-containerfiles.git
+cd article-03-26-containerfiles
+----
+
+To build the image, we execute:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build --file Containerfile .
+----
+
+podman::
++
+[source, bash]
+----
+podman build --file Containerfile .
+----
+====
+
+Before we take a look at the output of the command, we will analyze the command itself.
+
+The `--file` parameter (the short form is `-f`) instructs the engine which containerfile to use. The `.` at the end sets the context directory. The context directory has a major impact on the `COPY` instruction. All `src`-files and -paths of `COPY` instructions are always resolved relative to the context directory. Furthermore, the build process cannot escape from the context directory. As an example, we cannot use `..` (the parent directory) as `src` of a `COPY` instruction.
+
+Now, let us look at the output produced by the command.
+
+NOTE: I will show the output of `podman build...`. If you are using `docker build ...` instead, your output may slightly vary.
+
+.Output of `podman build --file Containerfile .`
+[#build-output]
+[source]
+----
+$ podman build --file Containerfile .
+STEP 1/7: FROM ubuntu:22.04
+STEP 2/7: LABEL   org.opencontainers.image.authors="Marco Bungart <mail@example.com>"   org.opencontainers.image.licenses=Apache-2.0   purpose="Learning containers"
+--> 94c21b5a2c8
+STEP 3/7: RUN useradd   --uid 1000   --home-dir /app   --create-home   --shell /bin/bash   runner
+--> 6d666a5c558
+STEP 4/7: USER 1000
+--> 983bc2adb88
+STEP 5/7: WORKDIR /app
+--> 2adac29e00d
+STEP 6/7: COPY   --chown=1000:1000   --chmod=700   hello-world.sh .
+--> 49b68cab2c8
+STEP 7/7: ENTRYPOINT [ "/bin/bash", "-c", "./hello-world.sh" ]
+COMMIT
+--> e1526e6c6b6
+e1526e6c6b6ea123e535b3a5145736c5eda542bc7b164834fa60e809be10509e
+----
+
+=== Layered Goodness
+
+We see that seven steps are executed, and each steps corresponds with one (non-comment) line of our containerile. Furthermore, after each step (except the first one), a (truncated) SHA-value is shown. Those are the **layers** of our image. An image consists of modifications of the file system, that are stacked on top of each other to form the final result, i.e. image. This has an important implication: If we were to copy a large file into the container in one step, and delete this file from the container in the next step (through, e.g. `RUN rm large-file`), then the size of the image would be unexpectedly large. This is due to the layering in a containerimage: the file is still there, but inaccessible. Just like we cannot really delete a file from docker (when it is checked in once, it will always be in the commit history), the large file still impacts the final image size.
+
+.Two Images with common layers
+[#tab-common-layers]
+[%header, cols=3*, role="left", width=33%, float="right"]
+|===
+|
+| Image 1
+| Image 2
+
+| Layer
+a| `a`
+a| `a`
+
+| Layer
+a| `b`
+a| `b`
+
+| Layer
+a| `c`
+a| `c`
+
+| Layer
+a| `x^1^`
+a| `x^2^`
+
+| Layer
+a| `y^1^`
+| N/A
+
+| Layer
+a| `z^1^`
+| N/A
+|===
+You might ask why containers use this layering technique. The answer is: performance, in particular transfer speed. Take a look at xref:tab-common-layers[Table 1]. If we were to first pull Image 1, we would have to pull layers `a`, `b`, `c`, `x^1^`, `y^1^` and `z^1^`. If we then were to pull Image 2, we would only need to pull layer `x^2^` 3since the (common) layers a, b and c were already pulled previously.
+
+=== How to control the layers
+We did not control the creation of layers; they were created automatically for us. In some cases, it might be desirable to have more fine-grained control on how layers are generated. There are tools, like link:https://buildah.io/["Buildah (`buildah.io`)", window=_blank] or link:https://github.com/bazelbuild/rules_docker["Bazel's container image rules (`github.com`)", window=_blank].
+
+=== Where is my image?
+To get some details about our image, we can run:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker image ls
+----
+
+podman::
++
+[source, bash]
+----
+podman image ls
+----
+====
+
+to get the following (or similar) output:
+
+[source]
+----
+$ podman image ls
+REPOSITORY                                    TAG                 IMAGE ID      CREATED         SIZE
+...
+<none>                                        <none>              e1526e6c6b6e  47 minutes ago  80.7 MB
+...
+----
+
+We see that the `IMAGE ID` is consistent with the last line of the xref:build-output[output we got when building the image]. But neither the `REPOSITORY nor the 'TAG` is set. We can rectify this by re-building the image, but this time with a tag:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build --file Containerfile --tag hello-world .
+----
+
+podman::
++
+[source, bash]
+----
+podman build --file Containerfile --tag hello-world .
+----
+====
+
+When we now list the images, we see that the `REPOSITORY` is set:
+
+[source]
+----
+podman image ls
+REPOSITORY                                    TAG                 IMAGE ID      CREATED         SIZE
+...
+localhost/hello-world                         latest              e1526e6c6b6e  51 minutes ago  80.7 MB
+...
+----
+
+We also see that the `tag` is set to `latest`, as we have discussed before. We can set the tag explicitly to a value of our choice by appending a colon (`:`) and then the diesired tag to the `--tag`, e.g.:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build --file Containerfile --tag hello-world:1.0 .
+----
+
+podman::
++
+[source, bash]
+----
+podman build --file Containerfile --tag hello-world:1.0 .
+----
+====
+
+which will result in
+
+[source]
+----
+podman image ls
+REPOSITORY                                    TAG                 IMAGE ID      CREATED         SIZE
+...
+localhost/hello-world                         latest              e1526e6c6b6e  56 minutes ago  80.7 MB
+localhost/hello-world                         1.0                 e1526e6c6b6e  56 minutes ago  80.7 MB
+...
+----
+
+We see that the prefix `localhost/` was added to the `REPOSITORY`. Furthermore, the tag `latest` is still present. This is due to the fact that it was present before. If we remove the image
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker image rm --force  e1526e6c6b6e
+----
+
+podman::
++
+[source, bash]
+----
+podman image rm --force  e1526e6c6b6e
+----
+====
+
+rebuild, and list the images again, we get the following (or similar) output:
+
+[source]
+----
+REPOSITORY                                    TAG                 IMAGE ID      CREATED             SIZE
+...
+localhost/hello-world                         1.0                 9886f26ecc33  About a minute ago  80.7 MB
+...
+----
+
+We can also see that the image tag changed, although we did not change the containerfile or any files involved in the build.
+
+=== Re-tagging
+Instead of re-building the image over and over again to change or add tags, we can re-tag the image. For example, let us assume we want to add the `latest` tag to the `hello-world` image. We can achieve this by executing
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker image tag hello-world:1.0 hello-world:latest
+----
+
+podman::
++
+[source, bash]
+----
+podman image tag hello-world:1.0 hello-world:latest
+----
+====
+
+And, in fact, if we now list the image, we see that the `latest` tag has been added:
+
+[source]
+----
+podman image ls
+REPOSITORY                                    TAG                 IMAGE ID      CREATED        SIZE
+...
+localhost/hello-world                         latest              9886f26ecc33  7 minutes ago  80.7 MB
+localhost/hello-world                         1.0                 9886f26ecc33  7 minutes ago  80.7 MB
+...
+----
+
+If we want to remove a tag from an image, we can use
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker image rm hello-world:latest
+----
+
+podman::
++
+[source, bash]
+----
+podman image rm hello-world:latest
+----
+====
+
+And, in deed, the `latest` tag is gone:
+
+[source]
+----
+podman image ls
+REPOSITORY                                    TAG                 IMAGE ID      CREATED         SIZE
+...
+localhost/hello-world                         1.0                 9886f26ecc33  12 minutes ago  80.7 MB
+...
+----
+
+CAUTION: There is also the `[docker|podman] untag ...` command. This will not only untag the specified image, but **all** images on this specific image id.
+
+=== Tagging for pushing
+So far, we have played around with the image locally. In fact, we used the **local image repository** that comes with every container runtime. Remembering xref:plant-lifecycle[Figure 1], we see that images (almostfootnote:[It is actually possible to link:https://docs.docker.com/engine/reference/commandline/export/["export images in `tar.gz` format (`docs.docker.com`)", window=_blank] and later link:https://docs.docker.com/engine/reference/commandline/import/["imported (`docs.docker.com`)", window=_blank]. This is, however, seldom used explicitly]) never stand on their own; they are stored in registries. To transfer images to an external registry, for example https://hub.docker.com/[`hub.docker.com`, window=_blank], we just re-tag the image, prefixing it with the registry host. For more information, please see link:https://docs.docker.com/engine/reference/commandline/tag/["the corresponding documentation at `docs.docker.com` ", window=_blank]. Finally, to push an image we can run
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker push <image-name-with-tag>
+----
+
+podman::
++
+[source, bash]
+----
+podman push <image-name-with-tag>
+----
+====
+
+NOTE: To push images, we have to authenticate against the registry first. We can do so by running `[docker|podmam] login <registry-host>`
+
+== Conclusion
+In this article, we discussed the lifecycle of a container. We talked about how a containerfile is structured, how containerfile instructions are structured and took a detailed look on some common containerfile instructions. In the process, we learned what container build time is. We built an image and explored the concept of layers, its implications and benefits. For image management, we took a look at tagging images with repositories and tags. We learned that we can re-tag images without rebuilding them. This can be particularly useful to add tag(s) to an existing image or to prepare images for a push to remote repositories. Likewise, we saw how we can remove tags from images. We closed by shortly discussing how images can be pushed to remote repositories.
