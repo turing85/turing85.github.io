@@ -26,7 +26,7 @@ Have you ever worked on an application, and something did not work (maybe a test
 In ye olden days, we had our mail server. And we provided sacrifices to it - especially before holidays - so the mail d(a)emon was pleased, and the server kept running. Same goes for the web server. And the file server. And that server of this one department that always fails in the middle of the night. In short: servers were pets, we cared for them.
 
 .Appeasing the mail d(a)emon, post 2000, colorized (Source: link:https://www.reddit.com/r/pcmasterrace/comments/3piyyb/it_team_before_going_on_holiday/[`reddit.com`, window=_blank])
-image::https://external-preview.redd.it/a_gU3NIkGNIBOOH8xzyRbhMtRA_MpTwr0NGddtXtOEU.jpg?auto=webp&v=enabled&s=9458e94d46f6f650bbce207a3b8e89117089257c[]
+image::https://external-preview.redd.it/a_gU3NIkGNIBOOH8xzyRbhMtRA_MpTwr0NGddtXtOEU.jpg?auto=webp&v=enabled&s=9458e94d46f6f650bbce207a3b8e89117089257c[link=self]
 
 With containers, the story is different. Of course, we still need some hardware for the containers run on. And we still need to care for this hardware. But we do not have dedicated hardware for the mail server, or the file server. We have a pool of machines, executing containers. Usually, we have more machines than we need, so we can compensate if one or more of our machines fails. The mail server is one of the containers, as is the file server. If one of the container is behaving abnormally, we kill and replace it. Containers are cattlefootnote:[I do not agree with the concept of terminating live stock because "it is sick".]. The phrased was link:http://cloudscaling.com/blog/cloud-computing/the-history-of-pets-vs-cattle/["most probably coined by Bill Baker between 2011 and 2012 (`cloudscaling.com`)", window=_blank].
 

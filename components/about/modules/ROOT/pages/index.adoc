@@ -1,7 +1,7 @@
 = Welcome
 
 .A bonfire (Source: link:https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[`english-heritage.org.uk`, window=_blank])
-image::https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[bonfire]
+image::https://www.english-heritage.org.uk/siteassets/home/visit/inspire-me/5-things-you-might-know---bonfire-night/bonfire_night_7_5.jpg?w=1440&h=612&mode=crop&scale=both&quality=100&anchor=NoFocus&WebsiteVersion=20220831140117[bonfire, link=self]
 
 &#8230; to my blog (xref:me/index.adoc[Who am I?]). Sit down and relax before moving on in the vibrant world that is the internet again. Maybe you are interested in some xref:articles::index.adoc[articles I wrote], or one of the xref:videos::index.adoc[talks I gave].
 

@@ -7,7 +7,7 @@ Why this handle? Do I think that I am the next Alan Turing? No, I am not the nex
 The reason for my handle is much more trivial. I think that not enough people know about Alan Turing, his history, what he has done for humanity, and how he was treated for this.
 
 .Alan Mathison Turing, ca. 1938 (source: link:https://de.wikipedia.org/wiki/Alan_Turing#/media/Datei:Alan_Turing_az_1930-as_%C3%A9vekben.jpg[`de.wikipedia.org`, window=_blank])
-image::https://upload.wikimedia.org/wikipedia/commons/7/79/Alan_Turing_az_1930-as_%C3%A9vekben.jpg[Alan Mathison Turing, role="left"]
+image::https://upload.wikimedia.org/wikipedia/commons/7/79/Alan_Turing_az_1930-as_%C3%A9vekben.jpg[Alan Mathison Turing, link=self, role="left"]
 
 Although Turing was the central figure in the movies link:https://www.imdb.com/title/tt0157583/?ref_=nv_sr_srsg_0["Enigma (2001, `imdb.com`)", window=_blank] and link:https://www.imdb.com/title/tt2084970/?ref_=nv_sr_srsg_0["The Imitation Game (2014, `imdb.com`)", window=_blank], most people do not know about him.
 

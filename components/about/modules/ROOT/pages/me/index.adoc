@@ -6,12 +6,13 @@ The following is a collection of things that I think define me as a person. If y
 
 == Origins
 .Coat of Arms of the city of Cologne (Source: link:https://de.wikipedia.org/wiki/K%C3%B6lner_Wappen#/media/Datei:DEU_Koeln_COA.svg[`de.wikipedia.org`, window=_blank])
-image::https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/DEU_Koeln_COA.svg/1024px-DEU_Koeln_COA.svg.png["Stadtwappen Köln", role="left"]
+image::https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/DEU_Koeln_COA.svg/1024px-DEU_Koeln_COA.svg.png["Stadtwappen Köln", link=self, role="left"]
+
 I was born in Cologne, Germany, on "Rosenmontag" ("Shrove Monday"). But I do not really like Carneval. I love, however, Cologne. It has a rich history, reaching back well over 2000 years. Most people think that Cologne was founded by the romans as military colony, then as province under the name "_Germania Inferioer_", and finally promoted to the city _"Colonia Claudia Ara Agrippinensium_". But the history reaches back even further. And then, of course, there is the Cathedral of Cologne. It was in construction for 632 years. And, even though it is a cathedral, link:https://www.swr.de/wissen/1000-antworten/stimmt-es-dass-der-koelner-dom-sich-selbst-gehoert-100.html["it is owned by itself (`swr.de`)", window=_blank].
 
 == Profession
 .Sokoban (Source: link:https://gamefabrique.com/games/sokoban/#&gid=1&pid=pc/sokoban-02.png[`gamefabrique.com`, window=_blank])
-image::https://gamefabrique.com/storage/screenshots/pc/sokoban-02.png[Sokoban,role="right"]
+image::https://gamefabrique.com/storage/screenshots/pc/sokoban-02.png[Sokoban, link=self, role="right"]
 I am a Software Engineer by passion. My first contact with computers was when I was four or five years old; we had a desktop computer for a week, borrowed from a friend. My dad and I discovered link:https://en.wikipedia.org/wiki/Sokoban["Sokoban (`en.wikipedia.org`)", window=_blank]. From this moment on, I was hooked. Of course, my mind back then was all about games and playing them. But the pure idea that I could do things ("__writing code__" was not yet in my vocabulary) was something that excited me.
 
 Some time later, in elementary school, we were told to "draw what you want to become later on". I drew myself, leaning over a link:https://en.wikipedia.org/wiki/Cathode-ray_tube["Cathod-ray tube (`en.wikipedia.org`)", window=_blank], with a text underneath:
@@ -23,7 +24,7 @@ ____
 In 8th grade, we had Electronic data processing at school. It boiled down to Excel and Word. I remember it being interesting at first (especially Excel), but then boring.
 
 .Logo Programming Language (Source: link:https://sydlexia.com/imagesandstuff/logo/square.png[`sydlexia.com`, window=_blank])
-image::https://sydlexia.com/imagesandstuff/logo/square.png[logo,role="right"]
+image::https://sydlexia.com/imagesandstuff/logo/square.png[logo, link=self, role="right"]
 
 In 10th grade, I had the luck to get in to the computer science class of our school (and the neighboring school, we shared a campus). This was, I would say, the first time that I "_wrote code_". My first programming language was link:https://el.media.mit.edu/logo-foundation/what_is_logo/logo_programming.html["Logo (`el.media.mit.edu`)", window=_blank]. The language has all constructs that are necessary to get started with programming. But most importantly, Logo gives instant visual feedback. I fondly remember typing in some code to draw a link:https://en.wikipedia.org/wiki/Regular_polygon["regular polygon (`en.wikipedia.org`)", window=_blank] just to find out that I calculated the angles wrong, and my pentagon became a pentagram.
 

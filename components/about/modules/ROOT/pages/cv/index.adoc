@@ -2,7 +2,7 @@
 
 == Personal Information
 
-[cols=4*,frame=none,grid=none]
+[cols=4*, frame=none, grid=none]
 |===
 |Name
 |Marco Bungart
@@ -42,42 +42,42 @@ Schwalmstadt and Cologne
 == Education
 
 === 10/2013 - 09/2018: Ph.D. (Dr. rer. nat)
-[cols=2*,frame=none,grid=none]
+[cols=2*, frame=none, grid=none]
 |===
 a|link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
 |Final grade: "_cum laude_", 2.0
 |===
 
 === 10/2011 - 09/2013: M.Sc. Computer Science
-[cols=2*,frame=none,grid=none]
+[cols=2*, frame=none, grid=none]
 |===
 a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
 |Final grade: 1.4
 |===
 
 === 10/2008 - 09/2011: B.Sc. Bioinformatics
-[cols=2*,frame=none,grid=none]
+[cols=2*, frame=none, grid=none]
 |===
 a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
 |Final grade: 2.3
 |===
 
 === 09/2005 - 01/2008: Apprenticeship IT specialist specializing in system integration
-[cols=2*,frame=none,grid=none]
+[cols=2*, frame=none, grid=none]
 |===
 a|link:https://www.mpifr-bonn.mpg.de/["Max-Planck-Institut für Radioastronomie, Bonn (`mpifr-bonn.mpg.de`)", window=_blank]
 |Final grade: 2.0
 |===
 
 === 08/1995 - 06/2004: Abitur (A-Level)
-[cols=2*,frame=none,grid=none]
+[cols=2*, frame=none, grid=none]
 |===
 a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-koeln.de`)", window=_blank]
 |Final grade: 3.0
 |===
 
 == Language Skills
-[cols=4*,frame=none,grid=none]
+[cols=4*, frame=none, grid=none]
 |===
 |German:
 |Native language
@@ -92,7 +92,7 @@ a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`ev
 
 == Personal Skills
 === Programming Languages and Frameworks
-[cols=6*,frame=none,grid=none]
+[cols=6*, frame=none, grid=none]
 |===
 |Java:
 |●●●
@@ -131,7 +131,7 @@ a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`ev
 |===
 
 === Additional Qualifications
-[cols=3*,frame=none,grid=none]
+[cols=3*, frame=none, grid=none]
 |===
 |AWS Certified Developer
 |absolved 02/2020

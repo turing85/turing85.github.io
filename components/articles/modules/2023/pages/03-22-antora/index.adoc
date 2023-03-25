@@ -14,7 +14,7 @@ This is all true. I offer one argument for Asciidoc, and one argument for Antora
 === An argument for Asciidoc
 .PlantUML ER diagram (Source: link:https://plantuml.com/ie-diagram[`plantuml.com`, window=_blank])
 [#plant-er]
-[plantuml, role="left"]
+[plantuml, link=self, role="left"]
 ----
 @startuml
 
@@ -53,7 +53,7 @@ e01 |o..o{ e03
 
 .PlantUML Use case diagram (Source: link:https://plantuml.com/use-case-diagram[`plantuml.com`, window=_blank])
 [#plantuml-use-case]
-[plantuml, role="right"]
+[plantuml, link=self, role="right"]
 ----
 @startuml
 :Main Admin: as Admin
@@ -260,7 +260,7 @@ Directory structure is mostly the same, but now we have multiple modules (one mo
 
 .Navigation generated from `nav.adoc`
 [#img-nav]
-image::03-22-antora/nav.png[role=right]
+image::03-22-antora/nav.png[link=self, role=right]
 
 We see something new here: the `.2021`. This is a Top level entry, and the following entries will be grouped under it. When we convert this navigation to HTML pages, it will look like shown in <<img-nav, Figure 3>>. This is a nice way to keep the navigation organized. But what makes this a partial? To answer this question, we need to take a look at the `nav.adoc` of the module, located in `ROOT/nav.adoc`. The navigation files for the other components look similar.
 
@@ -282,7 +282,7 @@ In this file, we bind all partial navigations of all components together, giving
 
 .Full navigation of the `videos` component
 [[img-full-nav]]
-image::03-22-antora/full-nav.png[role="right"]
+image::03-22-antora/full-nav.png[link=self, role="right"]
 
 As we can see, Antora tries its best to fit everything where it belongs. Since this part of the post is quite screenshot-heavy, I am not totally satisfied with the layout. on the other hand, for a minimal configuration approach, it is good.
 
