@@ -48,13 +48,15 @@ jobs:
             });
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/github-pages.zip', Buffer.from(download.data));
-      - name: Unzip Artifact
-        run: unzip github-pages.zip
+      - name: Unpackage Artifact
+        run: |
+          unzip github-pages.zip
+          tar -xvf artifact.tar
       - name: Deploy PR ${{ steps.get-pr-number.outputs.pr-number }} to Surge
         uses: dswistowski/surge-sh-action@v1
         with:
           domain: turing85-github-io-pr-${{ steps.get-pr-number.outputs.pr-number }}-preview.surge.sh
-          project: './build/site'
+          project: '.'
           login: ${{ secrets.SURGE_LOGIN }}
           token: ${{ secrets.SURGE_TOKEN }}
       - name: Update PR status comment on success
