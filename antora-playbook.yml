@@ -41,3 +41,4 @@ asciidoc:
     listing-caption: Listing
   extensions:
   - asciidoctor-kroki
+  - '@asciidoctor/tabs'
