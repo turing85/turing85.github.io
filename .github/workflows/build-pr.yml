@@ -11,10 +11,7 @@ jobs:
       - name: Get PR number
         id: get-pr-number
         run: |
-          pr_number="$(echo "${GITHUB_REF}" | sed 's|refs/pull/\([[:digit:]]\+\)/merge|\1|')"
-          mkdir -p build/site
-          echo "pr-number=${pr_number}"
-          echo "${pr_number}" > "pr-number.txt"
+          echo "${{ github.event.number }}" > "pr-number.txt"
       - name: Upload PR number artifact
         uses: actions/upload-artifact@v3
         with:
