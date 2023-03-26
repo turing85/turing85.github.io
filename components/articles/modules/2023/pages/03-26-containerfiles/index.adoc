@@ -177,7 +177,7 @@ a| `y^1^`
 a| `z^1^`
 | N/A
 |===
-You might ask why containers use this layering technique. The answer is: performance, in particular transfer speed. Take a look at xref:tab-common-layers[Table 1]. If we were to first pull Image 1, we would have to pull layers `a`, `b`, `c`, `x^1^`, `y^1^` and `z^1^`. If we then were to pull Image 2, we would only need to pull layer `x^2^` 3since the (common) layers a, b and c were already pulled previously.
+You might ask why containers use this layering technique. The answer is: performance, in particular transfer speed. Take a look at xref:tab-common-layers[Table 1]. If we were to first pull Image 1, we would have to pull layers `a`, `b`, `c`, `x^1^`, `y^1^` and `z^1^`. If we then were to pull Image 2, we would only need to pull layer `x^2^` since the (common) layers a, b and c were already pulled previously.
 
 === How to control the layers
 We did not control the creation of layers; they were created automatically for us. In some cases, it might be desirable to have more fine-grained control on how layers are generated. There are tools, like link:https://buildah.io/["Buildah (`buildah.io`)", window=_blank] or link:https://github.com/bazelbuild/rules_docker["Bazel's container image rules (`github.com`)", window=_blank].
