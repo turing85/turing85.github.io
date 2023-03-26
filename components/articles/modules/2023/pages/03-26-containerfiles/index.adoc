@@ -82,7 +82,7 @@ It is not strictly necessary to define what a container should do when it starts
 The first thing we see is that the `ENTRYPOINT` is an array. The second thing we see is that we do not simply call the script we want to start, but run it through `/bin/bash -c ...`, i.e. the first argument afterwards will be read, and all other arguments will be treated as parametersfootnote:[The `"-c"` is not strictly necessary in our example, but commonly used. Thus, I decided to include it here]. The third thing we notice is that each argument is a separate array entry.
 
 [#build-images]
-== Building images
+== Building images 👷
 Now that we have take a look at the containerfile, we will build the containerfile. We can find the sources link:https://github.com/turing85/article-03-26-containerfiles["here (`github.com`)", window=_blank]. We clone the project and switch in the root directory:
 
 .Cloning the project
@@ -213,7 +213,7 @@ REPOSITORY                                    TAG                 IMAGE ID      
 ...
 ----
 
-We see that the `IMAGE ID` is consistent with the last line of the xref:build-output[output we got when building the image]. But neither the `REPOSITORY nor the 'TAG` is set. We can rectify this by re-building the image, but this time with a tag:
+We see that the `IMAGE ID` is consistent with the last line of the xref:build-output[output we got when building the image]. But neither the `REPOSITORY` nor the `TAG` is set. We can rectify this by re-building the image, but this time with a tag:
 
 [tabs]
 ====
@@ -391,5 +391,5 @@ podman push <image-name-with-tag>
 
 NOTE: To push images, we have to authenticate against the registry first. We can do so by running `[docker|podmam] login <registry-host>`
 
-== Conclusion
+== Conclusion 💡
 In this article, we discussed the lifecycle of a container. We talked about how a containerfile is structured, how containerfile instructions are structured and took a detailed look on some common containerfile instructions. In the process, we learned what container build time is. We built an image and explored the concept of layers, its implications and benefits. For image management, we took a look at tagging images with repositories and tags. We learned that we can re-tag images without rebuilding them. This can be particularly useful to add tag(s) to an existing image or to prepare images for a push to remote repositories. Likewise, we saw how we can remove tags from images. We closed by shortly discussing how images can be pushed to remote repositories.
