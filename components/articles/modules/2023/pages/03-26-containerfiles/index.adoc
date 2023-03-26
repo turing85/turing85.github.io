@@ -1,7 +1,23 @@
 = Containers 101: Containerfiles 🗒
 Marco Bungart
 :page-created: 2023-03-26
+:page-last-modified: 2023-03-26
 :keywords: containers
+
+.Changelog
+[%collapsible]
+====
+[%header,cols="20%,80%"]
+|===
+|Date
+|Changes
+
+|2023-03-26
+a|
+- Added a sentence in section xref:layered-goodness[] to draw a comparison between image layers and git commits
+- Replaced Table 1, which represented images in a containerfile with a PlantUML diagram (xref:plant-common-layers[Figure 2])
+|===
+====
 
 == Motivation
 In the xref:03-23-what-are-containers/index.adoc[previous article of this series], we explored containers as a concept, how they differ from virtual machines and how they are realized on a high level. In this article we will see how containers are defined.
@@ -141,43 +157,19 @@ COMMIT
 e1526e6c6b6ea123e535b3a5145736c5eda542bc7b164834fa60e809be10509e
 ----
 
+[#layered-goodness]
 === Layered Goodness
 
-We see that seven steps are executed, and each steps corresponds with one (non-comment) line of our containerile. Furthermore, after each step (except the first one), a (truncated) SHA-value is shown. Those are the **layers** of our image. An image consists of modifications of the file system, that are stacked on top of each other to form the final result, i.e. image. This has an important implication: If we were to copy a large file into the container in one step, and delete this file from the container in the next step (through, e.g. `RUN rm large-file`), then the size of the image would be unexpectedly large. This is due to the layering in a containerimage: the file is still there, but inaccessible. Just like we cannot really delete a file from docker (when it is checked in once, it will always be in the commit history), the large file still impacts the final image size.
+We see that seven steps are executed, and each steps corresponds with one (non-comment) line of our containerile. Furthermore, after each step (except the first one), a (truncated) SHA-value is shown. Those are the **layers** of our image. An image consists of modifications of the file system, that are stacked on top of each other to form the final result, i.e. image. Those modifications are organized in said layers. A layer is similar to a commit in git: it is based on a previous layer and applies the changes to that layer. This has an important implication: If we were to copy a large file into the container in one step, and delete this file from the container in the next step (through, e.g. `RUN rm large-file`), then the size of the image would be unexpectedly large. This is due to the layering in a containerimage: the file is still there, but inaccessible. Just like we cannot really delete a file from docker (when it is checked in once, it will always be in the commit history), the large file still impacts the final image size.
 
 .Two Images with common layers
-[#tab-common-layers]
-[%header, cols=3*, role="left", width=33%, float="right"]
-|===
-|
-| Image 1
-| Image 2
+[#plant-common-layers]
+[plantuml, link=self, role=left]
+------
+include::attachment$03-26-containerfiles/layers.puml[]
+------
 
-| Layer
-a| `a`
-a| `a`
-
-| Layer
-a| `b`
-a| `b`
-
-| Layer
-a| `c`
-a| `c`
-
-| Layer
-a| `x^1^`
-a| `x^2^`
-
-| Layer
-a| `y^1^`
-| N/A
-
-| Layer
-a| `z^1^`
-| N/A
-|===
-You might ask why containers use this layering technique. The answer is: performance, in particular transfer speed. Take a look at xref:tab-common-layers[Table 1]. If we were to first pull Image 1, we would have to pull layers `a`, `b`, `c`, `x^1^`, `y^1^` and `z^1^`. If we then were to pull Image 2, we would only need to pull layer `x^2^` since the (common) layers a, b and c were already pulled previously.
+You might ask why containers use this layering technique. The answer is: performance, in particular transfer speed. Take a look at xref:plant-common-layers[Figure 2]. If we were to first pull Image 1, we would pull the `base` image, as well as layers `a`, `b`, `c`, `x^1^`, `y^1^` and `z^1^`. If we then were to pull Image 2, we would only need to pull layer `x^2^` since the `base` and (common) layers `a`, 'b` and `c` were already pulled previously.
 
 === How to control the layers
 We did not control the creation of layers; they were created automatically for us. In some cases, it might be desirable to have more fine-grained control on how layers are generated. There are tools, like link:https://buildah.io/["Buildah (`buildah.io`)", window=_blank] or link:https://github.com/bazelbuild/rules_docker["Bazel's container image rules (`github.com`)", window=_blank].
