@@ -24,7 +24,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Download pr-number artifact
-        uses: actions/github-script@v3.1.0
+        uses: actions/github-script@v4.2.0
         with:
           script: |
             var artifacts = await github.actions.listWorkflowRunArtifacts({
@@ -52,7 +52,7 @@ jobs:
           echo "pr-number=$(cat pr-number.txt)" | tee "${GITHUB_OUTPUT}"
           rm -rf pr-number.txt
       - name: Download github-pages artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
-        uses: actions/github-script@v3.1.0
+        uses: actions/github-script@v4.2.0
         with:
           script: |
             var artifacts = await github.actions.listWorkflowRunArtifacts({

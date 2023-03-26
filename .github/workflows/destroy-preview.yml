@@ -14,7 +14,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Download pr-number artifact
-        uses: actions/github-script@v3.1.0
+        uses: actions/github-script@v4.2.0
         with:
           script: |
             var artifacts = await github.actions.listWorkflowRunArtifacts({
