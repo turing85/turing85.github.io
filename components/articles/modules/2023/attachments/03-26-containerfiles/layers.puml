@@ -1,0 +1,60 @@
+@startuml
+
+<style>
+  rectangle {
+    HorizontalAlignment left
+  }
+</style>
+
+rectangle image1 as "Image 1"{
+  rectangle image1From [
+    ""FROM <base>""
+  ]
+  rectangle image1LayerA [
+    Layer ""a""
+  ]
+  rectangle image1LayerB [
+    Layer ""b""
+  ]
+  rectangle image1LayerC [
+    Layer ""c""
+  ]
+  rectangle image1LayerX [
+    Layer ""x<sup>1</sup>""
+  ]
+  rectangle image1LayerY [
+    Layer ""y<sup>1</sup>""
+  ]
+  rectangle image1LayerZ [
+    Layer ""z<sup>1</sup>""
+  ]
+  image1From -d-> image1LayerA
+  image1LayerA -d-> image1LayerB
+  image1LayerB -d-> image1LayerC
+  image1LayerC -d-> image1LayerX
+  image1LayerX -d-> image1LayerY
+  image1LayerY -d-> image1LayerZ
+}
+
+rectangle image2 as "Image 2"{
+  rectangle image2From [
+    ""FROM <base>""
+  ]
+  rectangle image2LayerA [
+    Layer ""a""
+  ]
+  rectangle image2LayerB [
+    Layer ""b""
+  ]
+  rectangle image2LayerC [
+    Layer ""c""
+  ]
+  rectangle image2LayerX [
+    Layer ""x<sup>2</sup>""
+  ]
+  image2From -d-> image2LayerA
+  image2LayerA -d-> image2LayerB
+  image2LayerB -d-> image2LayerC
+  image2LayerC -d-> image2LayerX
+}
+@enduml
