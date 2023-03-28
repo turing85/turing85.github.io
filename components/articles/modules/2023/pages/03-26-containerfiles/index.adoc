@@ -99,13 +99,13 @@ The first thing we see is that the `ENTRYPOINT` is an array. The second thing we
 
 [#build-images]
 == Building images 👷
-Now that we have take a look at the containerfile, we will build the containerfile. We can find the sources link:https://github.com/turing85/article-03-26-containerfiles["here (`github.com`)", window=_blank]. We clone the project and switch in the root directory:
+Now that we have take a look at the containerfile, we will build the containerfile. We can find the sources link:https://github.com/turing85/article-2023-03-26-containerfiles["here (`github.com`)", window=_blank]. We clone the project and switch in the root directory:
 
 .Cloning the project
 [source, bash]
 ----
-git clone git@github.com:turing85/article-03-26-containerfiles.git
-cd article-03-26-containerfiles
+git clone git@github.com:turing85/article-2023-03-26-containerfiles.git
+cd article-2023-03-26-containerfiles
 ----
 
 To build the image, we execute:
