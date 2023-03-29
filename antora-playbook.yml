@@ -34,6 +34,7 @@ runtime:
 
 asciidoc:
   attributes:
+    experimental: true
     kroki-fetch-diagram: true
     page-editable: false
     page-fileUri: false
