@@ -1,7 +1,7 @@
 = Containers 101: Containerfiles 🗒
 Marco Bungart
 :page-created: 2023-03-26
-:page-last-modified: 2023-03-26
+:page-last-modified: 2023-03-27
 :keywords: containers
 
 .Changelog
@@ -16,6 +16,9 @@ Marco Bungart
 a|
 - Added a sentence in section xref:layered-goodness[] to draw a comparison between image layers and git commits
 - Replaced Table 1, which represented images in a containerfile with a PlantUML diagram (xref:plant-common-layers[Figure 2])
+|2023-03-29
+a|
+- Fixed typo
 |===
 ====
 
@@ -73,7 +76,7 @@ If the separator `@` is used, the part afterwards is interpreted as digest. A di
 If no separator is given, then the special tag `latest` is assumed. For every image, the tag `latest` points to the latest build of that image, that has no explicit tag (we will discuss tags later).
 
 === Labels
-Looking at our containerfile, the next instruction is link:https://docs.docker.com/engine/reference/builder/#label[" `LABEL` (`docs.docker.com`)", window=_blank]. Labels are a way to add meta information (e.g. the name and contact information) of the maintainer. They do not change the behaviour of the actual image. Eac label is a `key=value` pair, and we can add multiple labels at once. There are link:https://github.com/opencontainers/image-spec/blob/main/annotations.md["standardaized labels for certain purposes (`github.com`)", window=_blank], e.g. `org.opencontainers.image.authors` and `org.opencontainers.image.licenses`. We can, of course, add custom labels. And we also see that we can omit the quotations around the value if the value does not include a space.
+Looking at our containerfile, the next instruction is link:https://docs.docker.com/engine/reference/builder/#label[" `LABEL` (`docs.docker.com`)", window=_blank]. Labels are a way to add meta information (e.g. the name and contact information) of the maintainer. They do not change the behaviour of the actual image. Each label is a `key=value` pair, and we can add multiple labels at once. There are link:https://github.com/opencontainers/image-spec/blob/main/annotations.md["standardaized labels for certain purposes (`github.com`)", window=_blank], e.g. `org.opencontainers.image.authors` and `org.opencontainers.image.licenses`. We can, of course, add custom labels. And we also see that we can omit the quotations around the value if the value does not include a space.
 
 === The `RUN` instruction
 The link:https://docs.docker.com/engine/reference/builder/#run[" `RUN` instruction (`docs.docker.com`)", window=_blank] is one of the most common instructions we see within a containerfile. It allows us to run a command in the container when the container is built into an image (we call this the __container build time__). In our containerfile, we create a new user through the link:https://linux.die.net/man/8/useradd[" `useradd` command (`die.net`)", window=_blank]
