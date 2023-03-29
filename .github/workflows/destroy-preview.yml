@@ -19,5 +19,5 @@ jobs:
         uses: actions-cool/maintain-one-comment@v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ steps.get-pr-number.outputs.pr-number }}
+          number: ${{ github.event.number }}
           delete: true
