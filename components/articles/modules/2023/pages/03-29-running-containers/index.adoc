@@ -1,0 +1,630 @@
+= Containers 101: Running ▶️ containers
+Marco Bungart
+:page-created: 2023-03-29
+:keywords: containers
+
+
+== Motivation
+Now that we have explored the xref:03-23-what-are-containers/index.adoc[concept of containers] and seen xref:03-26-containerfiles/index.adoc[how to create containers through containerfiles], it is time to understand how we can run containers.
+
+== Preparation
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank].
+
+== The setup
+For this article, we are going to use the code in link:https://github.com/turing85/article-2023-03-29-run-containers["this `github.com` repository", window=_blank]:
+
+.Checkout the demo code
+[source, bash]
+----
+git clone git@github.com:turing85/article-2023-03-20-run-containers.git
+cd article-2023-03-20-run-containers
+----
+
+We start by taking a look at the containerfile:
+
+.The containerfile
+[source, docker]
+----
+FROM ubuntu:22.04
+LABEL \
+  org.opencontainers.image.authors="Marco Bungart <mail@example.com>" \
+  org.opencontainers.image.licenses=Apache-2.0 \
+  purpose="Learning containers"
+
+RUN useradd \
+  --uid 1000 \
+  --home-dir /app \
+  --create-home \
+  --shell /bin/bash \
+  runner
+USER 1000
+WORKDIR /app
+RUN mkdir outdir <1>
+COPY \
+  --chown=1000:1000 \
+  --chmod=700 \
+  script.sh .
+ENTRYPOINT [ "./script.sh" ] <2>
+----
+
+We recognize a lot of element from the article xref:03-26-containerfiles/index.adoc[]. The notable differences are:
+
+<1> We create a new directory `outdir` within the current `WORKDIR /app`.
+<2> We call the script directly instead of executing it through `/bin/bash -c ....`. We will discuss why later in this article.
+
+To understand what a container started from an image created by this containerfile will do, we need to take a look at the entrypoint `script.sh`:
+
+.The `script.sh` file
+[#script-sh]
+[source, bash]
+----
+#!/usr/bin/env bash
+set -e
+
+function get_input() {
+  local input
+  if [[ -f input.txt ]]
+  then
+    input=$(cat input.txt)
+  else
+    input="${1:-default}"
+  fi
+  echo "${input}"
+}
+
+get_input "${1}" | tee outdir/output.txt <1>
+chmod 777 outdir/output.txt <2>
+----
+<1> From `man tee`: " `__tee - read from standard input and write to standard output and files__` "
+<2> give all users all permissions on this file
+
+The function `get_input()`:
+
+- returns the input of file `input.txt if it exists, otherwise
+- returns the 1st argument, if it exists, otherwise
+- returns the string `"default"`.
+
+The script calls function `get_input` with the first command line argument and prints its content to `stdout` and the file `outdir/output.txt`. It also gives full permission to all users to file `outdir/output.txt`
+
+Curiously, there is no file `input.txt`, and there is no command line argument passed to `script.sh`. We will see how we can use both later. For now, we build the image:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build -f Containerfile -t run-containers .
+----
+
+podman::
++
+[source, bash]
+----
+podman build -f Containerfile -t run-containers .
+----
+
+script::
++
+[source, bash]
+----
+./build.sh
+----
+====
+
+[NOTE]
+====
+The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and 'postman` contain the same (in name) scripts. Besides the tabs for `docker` and `docker`, we also see a tab for 'script`, where we can find the name of the script to execute, if we want to run the scripts instead.
+====
+
+== Run ▶️ the first container
+Next up, we want to run a container from the image we just created:
+
+[tabs]
+====
+docker::
++
+[script, bash]
+----
+docker run run-containers
+----
+
+podman::
++
+[script, bash]
+----
+podman run run-containers
+----
+
+script::
++
+[script, bash]
+----
+./run-without-rm.sh
+----
+====
+
+This produces the following output:
+
+.Output
+[source, bash]
+----
+$ ./run-without-rm.sh
+default
+----
+
+Okay, this was pretty much what we expected: we got the output `default`. So what about the container itself? What is it doing? We can list all containers running with:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker ps
+----
+
+podman::
++
+[source, bash]
+----
+podman ps
+----
+====
+
+which will show
+
+[source, bash]
+----
+$ podman ps
+CONTAINER ID  IMAGE                                    CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+----
+
+That is curious. There are no containers running. What happened with the container we just started? Well you see, the entrypoint process we defined (the `script.sh`) terminated. When the entrypoint process of a container terminates, the container itself will also terminate. And the exit status of the container is the exit status of the entrypoint process. We can see this by running
+
+[tabs]
+====
+docker::
++
+----
+docker ps -a # "-a" is the short form for "--all"
+----
+
+podman::
++
+----
+podman ps -a # "-a" is the short form for "--all"
+----
+====
+
+This will show us the following output:
+
+[source, bash]
+----
+$ podman ps -a
+CONTAINER ID  IMAGE                                    COMMAND     CREATED        STATUS                    PORTS                   NAMES
+...
+35ec7a3b8cef  localhost/run-containers:latest                      7 minutes ago  Exited (0) 7 minutes ago                          elegant_franklin
+...
+----
+
+We see that the container terminated (indicated by the `STATUS Exited(0)`). We also see that the container has a name (in the example: `elegant_franklin`). We never assigned an explicit name to the container, so the container engine gave it a random name. If we want to, we can assign an explicit name to a container when starting it by adding the `[docker|podman] ... --name my-awesome-container ...` parameter at startup. Notice however, that container names have to be unique.
+
+=== Stop it, it is already dead 💀! Or is it?
+It might seem at first that having a list off all containers, running or not, might be handy, especially for debugging. But the more we work with containers, the more containers we will start. This list can get long fast. This begs the question: why does the container engine keep this list? The answer is that our container is "only" stopped. We could start it again if we wanted to:
+
+[tabs]
+====
+docker::
++
+----
+docker start <container-id> # to start it by its id
+docker start <container-name> # to start it by its name
+----
+
+podman::
++
+----
+podman start <container-id> # to start it by its id
+podman start <container-name> # to start it by its name
+----
+====
+
+NOTE: If we start the container by id, we do not need to provide the full id. It is sufficient to provide a prefix of the id that uniquely identify the container. I found that three to four characters are usually sufficient. So to start the container above, we could write `podman start 35e`.
+
+Another curiosity: when we start the container through one of the commands, we see something similar to this
+
+[bin, bash]
+----
+$ podman start 35e
+35e
+----
+
+That is curious. We get back what we provided as input to the `start` subcommand, and nothing else. Previously, we saw that the container echoed `default`. Why didn't it do so now? Maybe something went wrong. Let us check the state of the container through `[docker|podman] ps -a`:
+
+[source, bash]
+----
+$ podman ps -a
+CONTAINER ID  IMAGE                            COMMAND     CREATED         STATUS                   PORTS       NAMES
+35ec7a3b8cef  localhost/run-containers:latest              30 minutes ago  Exited (0) 1 second ago              elegant_franklin
+----
+
+No, the container terminated successfully - just as before. So why did we not see the output? When we `start` a previously stopped container, the container is started in _detached_ mode by default. When we start a container through the `run` command (i.e. ), it is started in _attached_ mode by default. We can force `start` ing a container in attached mode by running `[docker|podman] start --attach ...`. Likewise, we can force `run` ning a container in detached mode by running `[docker|podman] run --detach ...`. Let us `start` our container in attached mode to see the effect:
+
+[source, bash]
+----
+$ podman start --attach 35e
+default
+----
+
+That is what we expected! The output is back, and the container terminated.
+
+=== Don't become to attached
+The whole concept of attached and detached leads to another question: when a container is detached, how can we see, for example, its logs? To understand this, we will shortly switch to another container image, one running indefinitely and produces some logs:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker run \
+  --detach \
+  --entrypoint /bin/bash \
+  ubuntu:22.04  \
+    '-c' \
+    'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
+----
+
+podman::
++
+[source, bash]
+----
+podman run \
+  --detach \
+  --entrypoint /bin/bash \
+  ubuntu:22.04  \
+    '-c' \
+    'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
+----
+====
+
+This container will run in an endless loop, producing a log every second. When we start the container, we see
+
+[source, bash]
+----
+$ podman run \
+  --detach \
+  --entrypoint /bin/bash \
+  ubuntu:22.04  \
+    '-c' \
+    'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
+84f7113d3e42d5ae8b757b33487b5380a15799d233cf107a776d7fadf673aecf
+----
+
+The response is the container id. When we check the state of the container:
+
+[source, bash]
+----
+$ podman ps -a
+CONTAINER ID  IMAGE                            COMMAND               CREATED             STATUS                     PORTS       NAMES
+35ec7a3b8cef  localhost/run-containers:latest                        About an hour ago   Exited (0) 40 minutes ago              elegant_franklin
+84f7113d3e42  docker.io/library/ubuntu:22.04   -c while (true); ...  About a minute ago  Up About a minute                      gracious_dubinsky
+----
+
+We see that the container is running. But how can we see the logs? that is where the `logs` subcommand comes in:
+
+[tabs]
+====
+docker::
++
+----
+docker logs <container-id>
+docker logs <container-name>
+----
+
+podman::
++
+----
+podman logs <container-id>
+podman logs <container-name>
+----
+====
+
+Running this command, we get:
+
+[source, bash]
+----
+$ podman logs 84f
+2023-03-28T21:40:02+00:00 I am running
+2023-03-28T21:40:03+00:00 I am running
+2023-03-28T21:40:04+00:00 I am running
+...
+2023-03-28T21:40:18+00:00 I am running
+2023-03-28T21:40:19+00:00 I am running
+2023-03-28T21:40:20+00:00 I am running
+
+----
+
+Okay, we are getting somewhere. But what if we do not want so see all logs until now, but instead see the logs live as they arrive? For this, we can add run `[docker|podman] logs ... -f ...` (`-f` is short for `--follow`):
+
+[source, bash]
+----
+$ podman logs -f 84f
+...
+2023-03-28T21:41:20+00:00 I am running
+2023-03-28T21:41:21+00:00 I am running
+2023-03-28T21:41:22+00:00 I am running
+2023-03-28T21:41:23+00:00 I am running
+2023-03-28T21:41:24+00:00 I am running
+2023-03-28T21:41:25+00:00 I am running
+2023-03-28T21:41:26+00:00 I am running
+2023-03-28T21:41:27+00:00 I am running
+...
+----
+
+We see the logs as they arrive, the output stays attached. We can stop following by pressing kbd:[Ctrl + C]. By this, we can also infer that only the _output_ got attached, not the _input_. We can see the output, but we cannot send input commands. How can we stop this container now? Analogous to the `start` subcommand, there is a `stop` subcommand, working analogously:
+
+[source, bash]
+----
+$ podman stop 84f
+WARN[0010] StopSignal SIGTERM failed to stop container gracious_dubinsky in 10 seconds, resorting to SIGKILL
+84f
+----
+
+That took some time. And we even see why: our program (i.e. the simple bash script) was not designed to handle `SIGTERM` signals, and the container engine decided after a timeout (in this case: 10 seconds) to terminate the container through a `SIGKILL` signal. If we do not want to wait for the timeout, we can use the `kill`- instead of the `stop`-subcommand.
+
+NOTE: If you want to learn more about termination signals, I recommend reading link:https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html["the corresponding `gnu.org` manual", window=_blank].
+
+=== Keep it clean 🧹
+We have already discussed that containers can be stopped. We have also seen that they stopped containers can still be seen through `[docker|podman] ps -a` and restarted. When we are done with a container and do not need it any longer, we should remove it for good. For this. we can use the `rm` (short for "_remove_") subcommand:
+
+[tabs]
+====
+docker::
++
+----
+docker rm <container-id>
+docker rm <container-name>
+----
+
+podman::
++
+----
+podman rm <container-id>
+podman rm <container-name>
+----
+====
+
+Let us see this in action:
+
+[source, bash]
+----
+$ podman ps -a
+CONTAINER ID  IMAGE                            COMMAND               CREATED         STATUS                        PORTS       NAMES
+35ec7a3b8cef  localhost/run-containers:latest                        2 hours ago     Exited (0) About an hour ago              elegant_franklin
+84f7113d3e42  docker.io/library/ubuntu:22.04   -c while (true); ...  32 minutes ago  Exited (137) 12 minutes ago               gracious_dubinsky
+$ podman rm 84f 35e
+84f
+35e
+$ podman ps -a
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+----
+
+We see another feature we have not yet seen about. Some subcommands accept multiple container ids or names. Those include
+
+* `start`
+* `stop`
+* `kill`, and
+* `rm`
+
+Now that we have seen how we can manage containers by starting, stopping, restarting, and removing them, we will continue with our original container example, and see how we can pass data into containers, and get data out of containers.
+
+== Getting Data into and out of the container ↔️
+
+At the start of this article, we saw that there are some things that seem pointless. We observed the following:
+
+* the usage of a fil `input.txt`, that is never present,
+* the usage of the first argument `$\{1\}` in `start.sh`, despite never passing along any arguments to this script, as well as
+* writing to a file `output.txt` in folder `outdir`.
+
+We will now discuss how we can use this features.
+
+=== Passing parameters to a container at startup
+When we start a container, we can add parameters after the image name, for example
+
+[tabs]
+====
+linux::
++
+----
+docker run --rm run-containers foo
+----
+
+podman::
++
+----
+podman run --rm run-containers foo
+----
+
+ script::
++
+----
+./run.sh foo
+----
+====
+
+Executing this command will result in
+
+[source, bash]
+----
+$ podman run --rm run-containers foo
+foo
+$ podman run --rm run-containers foo bar
+foo
+$ podman run --rm run-containers bar
+bar
+$ podman run --rm run-containers "foo
+bar
+baz"
+foo
+bar
+baz
+----
+
+We see that the text after the image name is passed along to the entrypoint process, as parameter. This is also the reason why we use
+
+[source, docker]
+----
+...
+ENTRYPOINT [ "./script.sh" ]
+----
+
+instead of
+
+[source, docker]
+----
+...
+ENTRYPOINT [ "/bin/bash", "-c", "./scriptsh" ]
+----
+
+in xref:script-sh[`script.sh`]. The latter would not work since the parameter is ont properly propagated. But why does the run only print `foo` when we pass `foo bar` as parameters? The answer is simple: we only use the _first_ parameter in xref:script-sh[`script.sh`], and the first parameter is `foo`. Passing some parameters as command line arguments is simple enough. But depending on the container we want to start, we might to pass in multiple complex configuration files to the container. For this wen can use...
+
+=== Volume mounts 🐎
+So let us say we want to pass a file to the container, and we do not want to or cannot provide the file when we build the container, i.e. we cannot use the `COPY` instruction in the containerfile. This is one use-case for volume mounts. Let us take a look how they work.
+
+[tabs]
+====
+docker::
++
+----
+echo "lorem
+ipsum
+dolor" > input.txt
+docker run --rm --volume ./input.txt:/app/input.txt:ro run-containers
+----
+
+podman::
++
+----
+echo "lorem
+ipsum
+dolor" > input.txt
+podman run --rm --volume ./input.txt:/app/input.txt:ro run-containers
+----
+
+script::
++
+----
+./run-with-input-file-volume.sh
+----
+====
+
+The first command creates a file `input.txt` with three lines The interesting part is the `... --volume input.txt:/app.input.txt:ro ...`. The command consists of three parts, separated by `:`:
+
+* The fist part specifies the location of the file to mount on the host ("our machine")
+* The second part specifies the destination in the container. The destination must be a (possibly absolute) file name. The prefix `./` is important when the file resides in the current directory, we will discuss why a bit later. The file does not need to exist; it will be created.
+* The third part is the access mode in which the file is mounted. This part is optional, and defaults to `rw` (read-write). We set it to `ro` (read-only) since we only want to read from the file, and not write to it.
+
+Running the above command yields:
+
+[source, bash]
+----
+$ echo "lorem
+ipsum
+dolor" > input.txt
+podman run --rm --volume ./input.txt:/app/input.txt:ro run-containers
+lorem
+ipsum
+dolor
+----
+
+This is a nice way to get more complex configurations into a parameter.
+
+As we already mentioned, we can use volumes in read-write mode, so the container is allowed to write to a file. What is more: we cannot only mount files, but complete directory. This is what we are going to do next:
+
+[tabs]
+====
+docker::
++
+----
+[[ -d out ]] || mkdir out
+docker run --rm --volume ./out:/app/outdir run-containers
+----
+
+podman::
++
+----
+[[ -d out ]] || mkdir out
+podman run --rm --volume ./out:/app/outdir run-containers
+----
+
+script::
++
+----
+./run-with-out-dir-volume.sh
+----
+====
+
+When we run this command, we see no obvious difference to previous runs. The difference comes when we inspect the `out`-directory:
+
+[source, bash]
+----
+$ ls -lisa out
+total 5
+654281 0 drwxrwxrwx 1 marco  marco     0 Mär 28 21:28 .
+671296 4 drwxrwxr-x 1 marco  marco  4096 Mär 29 17:33 ..
+656938 1 -rwxrwxrwx 1 100999 100999   18 Mär 28 21:47 output.txt
+$ cat out/output.txt
+lorem
+ipsum
+dolor
+----
+
+The behaviour is mostly as expected: the container mounted the `out` directory from the host to the `/app/outdir` directory in the container, hence the result was written to the `out`-directory on the host. But the owner seems strange. The file belongs some user with id `100999`. In the container, we defined the user with id `1000`. That is where user id substitution comes into play. In my local configuration, I configured `podman` so that for my local user, the user-id range starts at `100000`. User-id in the container will thus be mapped on local id `100000`, `100` on `100099` and, consequently `1000` to `100999`. This is also the reason we added the final `chmod ...` line in xref:script-sh[`script.sh`]. Otherwise, the file would have default permissions, and we would not be able to read the file.
+
+We can add more than one volume to a container, for example we can add the input- and the output-volume to the container:
+
+[tabs]
+====
+docker::
++
+----
+echo "lorem
+ipsum
+dolor" > input.txt
+[[ -d out ]] || mkdir out
+docker run --rm --volume ./input.txt:/app/input.txt:ro --volume ./out:/app/outdir run-containers
+----
+
+podman::
++
+----
+echo "lorem
+ipsum
+dolor" > input.txt
+[[ -d out ]] || mkdir out
+docker run --rm --volume ./input.txt:/app/input.txt:ro --volume ./out:/app/outdir run-containers
+----
+
+script::
++
+----
+./run-with-input-file-and-out-dir-volume.sh
+----
+====
+
+I think you can imagine what the result might be 🙂
+
+There is one final thing to discuss: why do we need to prefix files in the current directory with `./`? Sometimes, we might not want to provide a specific directory, but just give the container some storage it can write to. Take, for example, the data directory of a database container. We might want to persist the state of the container, even when we remove the container and start it back up later on, but we are not interested in using the data outside the container. In this case, we can give the container a named volume that is managed by the container enginefootnote:[The files will ultimately be stored in the host's file system, in a dedicated directory managed by the container engine]. To use such a container engine, we pass a name as first argument of `... --volume ...`. A name is a string that does not start with `/` or `./`. Hence, if we used `... --volume input.txt:/app/input.txt ...`, the container engine would interpret `input.txt` as volume name, not as path, and thus create a named volume. This volume is not "linked" to the file `input.txt`. We can list all volumes with `[docker|podman] volume ls`.
+
+== Conclusion
+In this article, we discussed how to manage containers. We also discussed the state a container can have, and how the exit code of a container can be controlled. Furthermore, we learned how we can pass data into and get data out of a container through arguments and volumes.
+
+With this article, the containers 101 series is concluded. But our journey has just started. We will explore more in depth concepts, for example:
+
+* orchestration of multiple containers,
+* creation of containers through other means than containerfiles
+* best practices for container design
+
+in future articles.
