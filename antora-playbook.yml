@@ -8,6 +8,7 @@ site:
   title: Marco Bungart
   start_page: about::index.adoc
   url: https://turing85.github.io
+  robots: allow
 
 content:
   sources:
