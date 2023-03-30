@@ -41,6 +41,7 @@ cd article-2023-03-29-run-containers
 We start by taking a look at the containerfile:
 
 .The containerfile
+[#container-file]
 [source, docker]
 ----
 FROM ubuntu:22.04
@@ -506,7 +507,7 @@ instead of
 ENTRYPOINT [ "/bin/bash", "-c", "./script.sh" ]
 ----
 
-in xref:script-sh[`script.sh`]. The latter would not work since the parameter is ont properly propagated. But why does the run only print `foo` when we pass `foo bar` as parameters? The answer is simple: we only use the _first_ parameter in xref:script-sh[`script.sh`], and the first parameter is `foo`. Passing some parameters as command line arguments is simple enough. But depending on the container we want to start, we might to pass in multiple complex configuration files to the container. For this wen can use...
+in the xref:container-file[`Containerfile`]. The latter would not work since the parameter is not properly propagated. But why does the run only print `foo` when we pass `foo bar` as parameters? The answer is simple: we only use the _first_ parameter in xref:script-sh[`script.sh`], and the first parameter is `foo`. Passing some parameters as command line arguments is simple enough. But depending on the container we want to start, we might to pass in multiple complex configuration files to the container. For this we can use...
 
 === Volume mounts 🐎
 So let us say we want to pass a file to the container, and we do not want to or cannot provide the file when we build the container, i.e. we cannot use the `COPY` instruction in the containerfile. This is one use-case for volume mounts. Let us take a look how they work.
