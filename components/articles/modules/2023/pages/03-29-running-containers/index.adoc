@@ -26,7 +26,7 @@ a|
 Now that we have explored the xref:03-23-what-are-containers/index.adoc[concept of containers] and seen xref:03-26-containerfiles/index.adoc[how to create containers through containerfiles], it is time to understand how we can run containers.
 
 == Preparation
-If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/["`buildx` (`docs.docker.com`)", window=_blank].
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docs.docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/["`buildx` (`docs.docker.com`)", window=_blank].
 
 == The setup
 For this article, we are going to use the code in link:https://github.com/turing85/article-2023-03-29-run-containers["this `github.com` repository", window=_blank]:
