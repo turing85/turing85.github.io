@@ -503,7 +503,7 @@ instead of
 [source, docker]
 ----
 ...
-ENTRYPOINT [ "/bin/bash", "-c", "./scriptsh" ]
+ENTRYPOINT [ "/bin/bash", "-c", "./script.sh" ]
 ----
 
 in xref:script-sh[`script.sh`]. The latter would not work since the parameter is ont properly propagated. But why does the run only print `foo` when we pass `foo bar` as parameters? The answer is simple: we only use the _first_ parameter in xref:script-sh[`script.sh`], and the first parameter is `foo`. Passing some parameters as command line arguments is simple enough. But depending on the container we want to start, we might to pass in multiple complex configuration files to the container. For this wen can use...
