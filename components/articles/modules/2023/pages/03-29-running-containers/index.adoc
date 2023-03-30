@@ -1,8 +1,24 @@
 = Containers 101: Running ▶️ containers
 Marco Bungart
 :page-created: 2023-03-29
+:page-last-modified: 2023-03-30
 :keywords: containers
 
+.Changelog
+[%collapsible]
+====
+[%header,cols="20%,80%"]
+|===
+|Date
+|Changes
+
+
+|2023-03-30
+a|
+- Fixed link of git clone url
+- changed git clone url to HTTPS protocol
+- Fixed typos
+====
 
 == Motivation
 Now that we have explored the xref:03-23-what-are-containers/index.adoc[concept of containers] and seen xref:03-26-containerfiles/index.adoc[how to create containers through containerfiles], it is time to understand how we can run containers.
@@ -16,8 +32,8 @@ For this article, we are going to use the code in link:https://github.com/turing
 .Checkout the demo code
 [source, bash]
 ----
-git clone git@github.com:turing85/article-2023-03-20-run-containers.git
-cd article-2023-03-20-run-containers
+git clone https://github.com/turing85/article-2023-03-29-run-containers.git
+cd article-2023-03-29-run-containers
 ----
 
 We start by taking a look at the containerfile:
@@ -114,7 +130,7 @@ script::
 
 [NOTE]
 ====
-The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and 'postman` contain the same (in name) scripts. Besides the tabs for `docker` and `docker`, we also see a tab for 'script`, where we can find the name of the script to execute, if we want to run the scripts instead.
+The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and 'podman` contain the same (in name) scripts. Besides the tabs for `docker` and `podman`, we also see a tab for `script`, where we can find the name of the script to execute, if we want to run the scripts instead.
 ====
 
 == Run ▶️ the first container

@@ -1,7 +1,7 @@
 = Containers 101: Containerfiles 🗒
 Marco Bungart
 :page-created: 2023-03-26
-:page-last-modified: 2023-03-27
+:page-last-modified: 2023-03-30
 :keywords: containers
 
 .Changelog
@@ -16,9 +16,14 @@ Marco Bungart
 a|
 - Added a sentence in section xref:layered-goodness[] to draw a comparison between image layers and git commits
 - Replaced Table 1, which represented images in a containerfile with a PlantUML diagram (xref:plant-common-layers[Figure 2])
+
 |2023-03-29
 a|
 - Fixed typo
+
+|2023-03-30
+a|
+- changed git clone url to HTTPS protocol
 |===
 ====
 
@@ -107,7 +112,7 @@ Now that we have take a look at the containerfile, we will build the containerfi
 .Cloning the project
 [source, bash]
 ----
-git clone git@github.com:turing85/article-2023-03-26-containerfiles.git
+git clone https://github.com/turing85/article-2023-03-26-containerfiles.git
 cd article-2023-03-26-containerfiles
 ----
 
