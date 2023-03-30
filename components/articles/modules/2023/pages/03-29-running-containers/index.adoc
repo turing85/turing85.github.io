@@ -143,14 +143,14 @@ Next up, we want to run a container from the image we just created:
 ====
 docker::
 +
-[script, bash]
+[source, bash]
 ----
 docker run run-containers
 ----
 
 podman::
 +
-[script, bash]
+[source, bash]
 ----
 podman run run-containers
 ----
@@ -205,12 +205,14 @@ That is curious. There are no containers running. What happened with the contain
 ====
 docker::
 +
+[source, bash]
 ----
 docker ps -a # "-a" is the short form for "--all"
 ----
 
 podman::
 +
+[source, bash]
 ----
 podman ps -a # "-a" is the short form for "--all"
 ----
@@ -236,6 +238,7 @@ It might seem at first that having a list off all containers, running or not, mi
 ====
 docker::
 +
+[source, bash]
 ----
 docker start <container-id> # to start it by its id
 docker start <container-name> # to start it by its name
@@ -243,6 +246,7 @@ docker start <container-name> # to start it by its name
 
 podman::
 +
+[source, bash]
 ----
 podman start <container-id> # to start it by its id
 podman start <container-name> # to start it by its name
@@ -337,6 +341,7 @@ We see that the container is running. But how can we see the logs? that is where
 ====
 docker::
 +
+[source, bash]
 ----
 docker logs <container-id>
 docker logs <container-name>
@@ -344,6 +349,7 @@ docker logs <container-name>
 
 podman::
 +
+[source, bash]
 ----
 podman logs <container-id>
 podman logs <container-name>
@@ -402,6 +408,7 @@ We have already discussed that containers can be stopped. We have also seen that
 ====
 docker::
 +
+[source, bash]
 ----
 docker rm <container-id>
 docker rm <container-name>
@@ -409,6 +416,7 @@ docker rm <container-name>
 
 podman::
 +
+[source, bash]
 ----
 podman rm <container-id>
 podman rm <container-name>
@@ -516,6 +524,7 @@ So let us say we want to pass a file to the container, and we do not want to or 
 ====
 docker::
 +
+[source, bash]
 ----
 echo "lorem
 ipsum
@@ -525,6 +534,7 @@ docker run --rm --volume ./input.txt:/app/input.txt:ro run-containers
 
 podman::
 +
+[source, bash]
 ----
 echo "lorem
 ipsum
@@ -566,6 +576,7 @@ As we already mentioned, we can use volumes in read-write mode, so the container
 ====
 docker::
 +
+[source, bash]
 ----
 [[ -d out ]] || mkdir out
 docker run --rm --volume ./out:/app/outdir run-containers
@@ -573,6 +584,7 @@ docker run --rm --volume ./out:/app/outdir run-containers
 
 podman::
 +
+[source, bash]
 ----
 [[ -d out ]] || mkdir out
 podman run --rm --volume ./out:/app/outdir run-containers
@@ -608,6 +620,7 @@ We can add more than one volume to a container, for example we can add the input
 ====
 docker::
 +
+[source, bash]
 ----
 echo "lorem
 ipsum
@@ -618,12 +631,13 @@ docker run --rm --volume ./input.txt:/app/input.txt:ro --volume ./out:/app/outdi
 
 podman::
 +
+[source, bash]
 ----
 echo "lorem
 ipsum
 dolor" > input.txt
 [[ -d out ]] || mkdir out
-docker run --rm --volume ./input.txt:/app/input.txt:ro --volume ./out:/app/outdir run-containers
+podman run --rm --volume ./input.txt:/app/input.txt:ro --volume ./out:/app/outdir run-containers
 ----
 
 script::
