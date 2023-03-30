@@ -18,13 +18,14 @@ a|
 - Fixed link of git clone url
 - changed git clone url to HTTPS protocol
 - Fixed typos
+- Added Docker's `buildx` as prerequisite
 ====
 
 == Motivation
 Now that we have explored the xref:03-23-what-are-containers/index.adoc[concept of containers] and seen xref:03-26-containerfiles/index.adoc[how to create containers through containerfiles], it is time to understand how we can run containers.
 
 == Preparation
-If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank].
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/[`buildx`, window=_blank].
 
 == The setup
 For this article, we are going to use the code in link:https://github.com/turing85/article-2023-03-29-run-containers["this `github.com` repository", window=_blank]:
@@ -130,7 +131,7 @@ script::
 
 [NOTE]
 ====
-The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and 'podman` contain the same (in name) scripts. Besides the tabs for `docker` and `podman`, we also see a tab for `script`, where we can find the name of the script to execute, if we want to run the scripts instead.
+The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and `podman` contain the same (in name) scripts. Besides the tabs for `docker` and `podman`, we also see a tab for `script`, where we can find the name of the script to execute, if we want to run the scripts instead.
 ====
 
 == Run ▶️ the first container

@@ -23,7 +23,8 @@ a|
 
 |2023-03-30
 a|
-- changed git clone url to HTTPS protocol
+- Changed git clone url to HTTPS protocol
+- Added Docker's `buildx` as prerequisite
 |===
 ====
 
@@ -31,7 +32,7 @@ a|
 In the xref:03-23-what-are-containers/index.adoc[previous article of this series], we explored containers as a concept, how they differ from virtual machines and how they are realized on a high level. In this article we will see how containers are defined.
 
 == Preparation
-If you want to follow along, you need a means to build container images from containerfiles. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank].
+If you want to follow along, you need a means to build container images from containerfiles. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podmain.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/[`buildx`, window=_blank].
 
 == Terminology
 You may notice that this article is named "containerfiles", and you may have heard the term "dockerfile". Right now, they are synonyms. I prefer using the term "containerfile" since it is provider-independent.
