@@ -26,22 +26,22 @@ jobs:
         uses: actions/github-script@v6.4.0
         with:
           script: |
-            var artifacts = await github.actions.listWorkflowRunArtifacts({
+            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
+               run_id: ${{ github.event.workflow_run.id }},
             });
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "pr-number"
             })[0];
-            var download = await github.actions.downloadArtifact({
+            var download = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id,
                archive_format: 'zip',
             });
             var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/pr-number.zip', Buffer.from(download.data));
+            fs.writeFileSync('${{ github.workspace }}/pr-number.zip', Buffer.from(download.data));
       - name: Unpackage pr-number Artifact
         run: |
           unzip pr-number.zip
@@ -54,22 +54,22 @@ jobs:
         uses: actions/github-script@v4.2.0
         with:
           script: |
-            var artifacts = await github.actions.listWorkflowRunArtifacts({
+            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
+               run_id: ${{ github.event.workflow_run.id }},
             });
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "github-pages"
             })[0];
-            var download = await github.actions.downloadArtifact({
+            var download = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id,
                archive_format: 'zip',
             });
             var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/github-pages.zip', Buffer.from(download.data));
+            fs.writeFileSync('${{ github.workspace }}/github-pages.zip', Buffer.from(download.data));
       - name: Unpackage github-pages Artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
         run: |
           unzip github-pages.zip
