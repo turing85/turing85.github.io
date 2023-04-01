@@ -34,7 +34,7 @@ jobs:
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "pr-number"
             })[0];
-            var download = await github.rest.actions.listWorkflowRunArtifacts({
+            var download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id,
@@ -51,7 +51,7 @@ jobs:
           echo "pr-number=$(cat pr-number.txt)" | tee "${GITHUB_OUTPUT}"
           rm -rf pr-number.txt
       - name: Download github-pages artifact from PR ${{ steps.get-pr-number.outputs.pr-number }}
-        uses: actions/github-script@v4.2.0
+        uses: actions/github-script@v6.4.0
         with:
           script: |
             var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
@@ -62,7 +62,7 @@ jobs:
             var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "github-pages"
             })[0];
-            var download = await github.rest.actions.listWorkflowRunArtifacts({
+            var download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id,
