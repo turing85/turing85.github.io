@@ -1,7 +1,23 @@
 = Antora: Documentation made simple
 Marco Bungart
 :page-created: 2023-03-22
+:page-last-modified: 2023-04-01
 :keywords: documentation, asciidoc, antora
+
+.Changelog
+[%collapsible]
+====
+[%header,cols="20%,80%"]
+|===
+|Date
+|Changes
+
+
+|2023-04-01
+a|
+- Updated listing 1 to reflect the change in directory structure
+|===
+====
 
 Since my blog is powered by link:https://asciidoc.org/["Asciidoc (`asciidoc.org`)", window=_blank] and link:https://antora.org/["Antora (`antora.org`)", window=_blank], I thought that this would be a good fit for a first blog article.
 
@@ -144,9 +160,6 @@ Antora is driven by a concept of modules. To explain this in more detail, let us
         ├── antora.yml
         └── modules
             └── ROOT
-                ├── images
-                │   └── penpen
-                │       └── penpen.png
                 ├── nav.adoc
                 └── pages
                     ├── blog
