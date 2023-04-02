@@ -14,17 +14,17 @@ Marco Bungart
 
 |2023-03-26
 a|
-- Added a sentence in section xref:layered-goodness[] to draw a comparison between image layers and git commits
-- Replaced Table 1, which represented images in a containerfile with a PlantUML diagram (xref:plant-common-layers[Figure 2])
+* Added a sentence in section xref:layered-goodness[] to draw a comparison between image layers and git commits
+* Replaced Table 1, which represented images in a containerfile with a PlantUML diagram (xref:plant-common-layers[Figure 2])
 
 |2023-03-29
 a|
-- Fixed typo
+* Fixed typo
 
 |2023-03-30
 a|
-- Changed git clone url to HTTPS protocol
-- Added Docker's `buildx` as prerequisite
+* Changed git clone url to HTTPS protocol
+* Added Docker's `buildx` as prerequisite
 
 |2023-04-02
 a|

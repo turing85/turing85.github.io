@@ -15,10 +15,10 @@ Marco Bungart
 
 |2023-03-30
 a|
-- Fixed link of git clone url
-- changed git clone url to HTTPS protocol
-- Fixed typos
-- Added Docker's `buildx` as prerequisite
+* Fixed link of git clone url
+* changed git clone url to HTTPS protocol
+* Fixed typos
+* Added Docker's `buildx` as prerequisite
 |===
 ====
 
@@ -99,9 +99,9 @@ chmod 777 outdir/output.txt <2>
 
 The function `get_input()`:
 
-- returns the input of file `input.txt if it exists, otherwise
-- returns the 1st argument, if it exists, otherwise
-- returns the string `"default"`.
+* returns the input of file `input.txt if it exists, otherwise
+* returns the 1st argument, if it exists, otherwise
+* returns the string `"default"`.
 
 The script calls function `get_input` with the first command line argument and prints its content to `stdout` and the file `outdir/output.txt`. It also gives full permission to all users to file `outdir/output.txt`
 

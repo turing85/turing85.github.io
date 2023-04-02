@@ -15,7 +15,7 @@ Marco Bungart
 
 |2023-04-01
 a|
-- Updated listing 1 to reflect the change in directory structure
+* Updated listing 1 to reflect the change in directory structure
 |===
 ====
 
@@ -198,9 +198,9 @@ NOTE: I have disabled the navigation menu for version on this site, but Antora i
 
 A component has directories to represent different modules. The standard module is called `ROOT` (which is the only module used in the `about` component). Within a module, we find more subdirectories, e.g.:
 
-- `pages` holding the actual pages in form of Asciidoc files
-- `images` holding images referenced in Asciidoc files
-- `partials` holding partial definitions, that are used elsewhere (we will see them in action soon).
+* `pages` holding the actual pages in form of Asciidoc files
+* `images` holding images referenced in Asciidoc files
+* `partials` holding partial definitions, that are used elsewhere (we will see them in action soon).
 
 For an in-depth explanation, I recommend taking a look at the link:https://docs.antora.org/antora/latest/standard-directories/["corresponding documentation at `docs.antora.org`", window=_blank].
 
