@@ -23,57 +23,94 @@
 == Work Experience
 
 === Since 12/2018: Senior Software Engineer
-at link:https://www.consol.de/["ConSol, Düsseldorf (`consol.de`)", window=_blank]
+[cols=1*, frame=none, grid=none]
+|===
+a|link:https://www.consol.de/["ConSol (`consol.de`)", window=_blank]
+
+|Düsseldorf
+|===
 
 === 10/2013 - 09/2018: Research Assistant / Ph.D. Student
-link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
+[cols=1*, frame=none, grid=none]
+|===
+a|link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel (`uni-kassel.de`)", window=_blank]
+
+|Kassel
+|===
 
 === 04/2011 - 07/2013: Auxiliary Scientist
-link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+[cols=1*, frame=none, grid=none]
+|===
+a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena (`uni-jena.de`)", window=_blank]
+
+|Jena
+|===
 
 === 10/2008 - 02/2010: Auxiliary Scientist
-link:https://www.bgc-jena.mpg.de["Max-Planck-Institut für Biogeochemie, Jena (`bgc-jena.mpg.de`)", window=_blank]
+[cols=1*, frame=none, grid=none]
+|===
+a|link:https://www.bgc-jena.mpg.de["Max-Planck-Institut für Biogeochemie (`bgc-jena.mpg.de`)", window=_blank]
+
+|Jena
+|===
 
 === 10/2004 - 06/2005: Military Service - Basic Training and Basic Military Service
-Harthbergkaserne and Rechenzentrum des Heeresamts,
+[cols=1*, frame=none, grid=none]
+|===
+|Harthbergkaserne and Rechenzentrum des Heeresamts,
 
-Schwalmstadt and Cologne
+|Schwalmstadt and Cologne
+|===
 
 == Education
 
 === 10/2013 - 09/2018: Ph.D. (Dr. rer. nat)
 [cols=2*, frame=none, grid=none]
 |===
-a|link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel, Kassel (`uni-kassel.de`)", window=_blank]
+a|link:https://www.uni-kassel.de/eecs/plm/home["Universität Kassel (`uni-kassel.de`)", window=_blank]
 |Final grade: "_cum laude_", 2.0
+
+|Kassel
+|
 |===
 
 === 10/2011 - 09/2013: M.Sc. Computer Science
 [cols=2*, frame=none, grid=none]
 |===
-a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena (`uni-jena.de`)", window=_blank]
 |Final grade: 1.4
+|Jena
+|
 |===
 
 === 10/2008 - 09/2011: B.Sc. Bioinformatics
 [cols=2*, frame=none, grid=none]
 |===
-a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena, Jena (`uni-jena.de`)", window=_blank]
+a|link:https://www.uni-jena.de/["Friedrich-Schiller-Universität Jena (`uni-jena.de`)", window=_blank]
 |Final grade: 2.3
+
+|Jena
+|
 |===
 
 === 09/2005 - 01/2008: Apprenticeship IT specialist specializing in system integration
 [cols=2*, frame=none, grid=none]
 |===
-a|link:https://www.mpifr-bonn.mpg.de/["Max-Planck-Institut für Radioastronomie, Bonn (`mpifr-bonn.mpg.de`)", window=_blank]
+a|link:https://www.mpifr-bonn.mpg.de/["Max-Planck-Institut für Radioastronomie (`mpifr-bonn.mpg.de`)", window=_blank]
 |Final grade: 2.0
+
+|Bonn
+|
 |===
 
 === 08/1995 - 06/2004: Abitur (A-Level)
 [cols=2*, frame=none, grid=none]
 |===
-a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum, Köln (`evt-koeln.de`)", window=_blank]
+a|link:https://www.evt-koeln.de/["Elisabeth-von-Thüringen Gymnaskum(`evt-koeln.de`)", window=_blank]
 |Final grade: 3.0
+
+|Köln
+|
 |===
 
 == Language Skills
