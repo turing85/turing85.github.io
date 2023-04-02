@@ -1,0 +1,83 @@
+@startuml
+rectangle builder {
+  rectangle image1From [
+    ""FROM ... AS ...""
+  ]
+  rectangle image1LayerA [
+    ""WORKDIR ...""
+  ]
+  rectangle image1LayerB [
+    ""COPY ...""
+  ]
+  rectangle image1LayerC [
+    ""RUN ...""
+  ]
+
+  image1From <-- image1LayerA
+  image1LayerA <-- image1LayerB
+  image1LayerB <-- image1LayerC
+}
+
+rectangle alpine-jdk-runner {
+  rectangle image2From [
+  ""FROM builder AS ...""
+  ]
+  rectangle image2LayerA [
+    ""ENTRYPOINT ...""
+  ]
+  image1LayerC <-d- image2From
+  image2From <-d- image2LayerA
+}
+
+rectangle alpine-runner {
+  rectangle image3From [
+    ""FROM ... AS ...""
+  ]
+  rectangle image3LayerA [
+      ""COPY \""
+      ""  --from=builder \""
+      ""  ...""
+    ]
+    rectangle image3LayerB [
+        ""ENTRYPOINT ...""
+      ]
+  image3From <-d- image3LayerA
+  image3LayerA <-d- image3LayerB
+}
+
+rectangle distroless-runner {
+  rectangle image4From [
+    ""FROM ... AS ...""
+  ]
+  rectangle image4LayerA [
+      ""COPY \""
+      ""  --from=builder \""
+      ""  ...""
+    ]
+    rectangle image4LayerB [
+        ""ENTRYPOINT ...""
+      ]
+  image4From <-d- image4LayerA
+  image4LayerA <-d- image4LayerB
+}
+
+rectangle ubi-runner {
+  rectangle image5From [
+    ""FROM ... AS ...""
+  ]
+  rectangle image5LayerA [
+      ""COPY \""
+      ""  --from=builder \""
+      ""  ...""
+    ]
+    rectangle image5LayerB [
+        ""ENTRYPOINT ...""
+      ]
+  image5From <-d- image5LayerA
+  image5LayerA <-d- image5LayerB
+}
+
+"builder" <-- image3LayerA
+"builder" <-- image4LayerA
+"builder" <-- image5LayerA
+@enduml

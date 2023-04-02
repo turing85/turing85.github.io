@@ -28,12 +28,12 @@ rectangle image1 as "Image 1"{
   rectangle image1LayerZ [
     Layer ""z<sup>1</sup>""
   ]
-  image1From -d-> image1LayerA
-  image1LayerA -d-> image1LayerB
-  image1LayerB -d-> image1LayerC
-  image1LayerC -d-> image1LayerX
-  image1LayerX -d-> image1LayerY
-  image1LayerY -d-> image1LayerZ
+  image1From <-d- image1LayerA
+  image1LayerA <-d- image1LayerB
+  image1LayerB <-d- image1LayerC
+  image1LayerC <-d- image1LayerX
+  image1LayerX <-d- image1LayerY
+  image1LayerY <-d- image1LayerZ
 }
 
 rectangle image2 as "Image 2"{
@@ -52,9 +52,9 @@ rectangle image2 as "Image 2"{
   rectangle image2LayerX [
     Layer ""x<sup>2</sup>""
   ]
-  image2From -d-> image2LayerA
-  image2LayerA -d-> image2LayerB
-  image2LayerB -d-> image2LayerC
-  image2LayerC -d-> image2LayerX
+  image2From <-d- image2LayerA
+  image2LayerA <-d- image2LayerB
+  image2LayerB <-d- image2LayerC
+  image2LayerC <-d- image2LayerX
 }
 @enduml
