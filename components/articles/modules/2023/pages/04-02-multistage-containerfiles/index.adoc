@@ -69,7 +69,7 @@ The order in which stages are defined within the containerfile is important. A s
 The next thing we notice is that in the stage named `alpine-jdk-runner` (2), we use `builder` as base and do not copy anything. In this case, the `FROM builder ...` instruction acts in in its usual way: we use `builder` as base image.
 
 === The semantics of the containerfile
-.Visual representation of the images created. Text in "<<>>" represents the name of a layer.
+.Visual representation of the images created.
 [#plant-layers]
 [plantuml, link=self]
 ----
