@@ -1,0 +1,415 @@
+= Advanced containers: multistage containerfiles 🎭
+Marco Bungart
+:page-created: 2023-04-02
+:keywords: containers
+
+== Motivation
+We already spoke about the basics of building images in xref:2023:03-26-containerfiles/index.adoc[]. There are, however, more complex scenarios. For example: building an application often requires more tools than running the application. For a Java application, we need a JDK and most probably a build tool like link:https://maven.apache.org/["Maven (`maven.apache.org`)", window=_blank] or link:https://gradle.org/["Gradle (`gradle.org`)", window=_blank] to build the application, but only a JRE to run it. For an angular frontend, we need a build tool such as link:https://nodejs.org/["Node.js (`nodejs.org`)", window=_blank] to build, but only a web server like link:https://httpd.apache.org/["Apache (`httpd.apache.org`)", window=_blank] or link:https://www.nginx.com/["NGINX (`nginx.com`)", window=_blank] to serve it.
+
+Another common example: we need the same application in multiple configurations. For example, we need the application once configured as primary, and multiple times configured as secondaries. The base configuration is the same between primary and secondaries, but some configurations differ.
+
+In those situations, we can use multistage containerfiles to organize our images.
+
+== Preparation
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docs.docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podman.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/[" `buildx` (`docs.docker.com`)", window=_blank].
+
+== The setup
+For this article, we are going to use the code in link:https://github.com/turing85/article-2023-04-02-multistage["this `github.com` repository", window=_blank]:
+
+.Checkout the demo code
+[source, bash]
+----
+git clone https://github.com/turing85/article-2023-04-02-multistage
+cd article-2023-04-02-multistage
+----
+
+We start by taking a look at the containerfile:
+
+.A multistage containerfile
+[source, docker]
+----
+FROM eclipse-temurin:17.0.6_10-jdk-alpine AS builder <1>
+RUN mkdir /project
+WORKDIR /project
+COPY . .
+RUN ./mvnw package
+
+FROM builder AS alpine-jdk-runner <2>
+ENTRYPOINT [ "java", "-jar", "target/article-2023-04-02-multistage-1.0-SNAPSHOT.jar" ]
+
+FROM eclipse-temurin:17.0.6_10-jre-alpine AS alpine-runner <3>
+COPY \
+  --from=builder \ <6>
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+FROM gcr.io/distroless/java17:nonroot AS distroless-runner <4>
+COPY \
+  --from=builder \ <7>
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:1.15 AS ubi-runner <5>
+COPY \
+  --from=builder \ <8>
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+----
+
+The first thing we notice is that we have multiple `FROM` instructions (at 1, 2, 3, 4, and 5). We also see that each `FROM` has an `AS <name>`.  In this constellation, each block from one `FROM` to the next or to the end of the file is called a _stage_ (excluding the next `FROM`). We observe further that at 6, 7, and 8, files are not copied from the host machine, but another stage. For this to work, it is essential that the stage has a name.
+
+[NOTE]
+====
+The order in which stages are defined within the containerfile is important. A stage can only reference stages that are defined before, not after.
+====
+
+The next thing we notice is that in the stage named `alpine-jdk-runner` (2), we use `builder` as base and do not copy anything. In this case, the `FROM builder ...` instruction acts in in its usual way: we use `builder` as base image.
+
+=== The semantics of the containerfile
+.Visual representation of the images created. Text in "<<>>" represents the name of a layer.
+[#plant-layers]
+[plantuml, link=self]
+----
+include::2023:attachment$04-02-multistage-containerfiles/layers.puml[]
+----
+
+Now let us walk through what this containerfile actually does.
+
+the `builder`-stage produces a single executable `jar`-file in directory `/project/target` (a simple "hello, world" program). The purpose of all `*-runner` images is the execution of this `jar`-file.
+
+The `alpine-jdk-runner`-image uses the `builder`-image as a base. This means that it has access to all files that were present or created during the build of the `builder`-image. In particular, the `alpine-jdk-runner`-image adds a single layer at the end of the `builder`-image. Notice, however, that the `builder`-image is *not* modified by this action.
+
+All other `*-runner`-images use different base images (all Java 17, but different providers), copy the `jar`-file created int the `builder`-stage and add a corresponding `ENTRYPOINT` to execute this `jar`.
+
+xref:plant-layers[Figure 1] illustrates the layers and their interconnection.
+
+[NOTE]
+====
+The `--chmod=444` (copying all files with only the `read`-flag set) is not essential for this tutorial. It is rather a best practice. One might ask why *all* users are permitted to read all files, instead of only permitting the current user to read the files. This is due to the fact that I design my containers to be run in link:https://www.redhat.com/en/technologies/cloud-computing/openshift["OpenShift (`redhat.com`)", window=_blank], Red Hat's Kubernetes-powered container platform. By default, OpenShift link:https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines["\"__runs containers using an arbitrarily assigned user ID\"__ (`docs.openshift.com`)", window=_blank]. Thus, we do not know with which user ID the container is executed.
+====
+
+== Building the images 🖼
+
+Okay, now that we understand what the containerfile does, let us start building some images.
+
+NOTE: The code repository we cloned includes scripts to build and run the container. We can find them in `scripts/[docker|podman]`. The scripts are meant to be executed from the directory they are located, thus we should `cd ...` into the corresponding directory before executing them. Both subdirectories for `docker` and `podman` contain the same (in name) scripts. Besides the tabs for `docker` and `podman`, we also see a tab for `script`, where we can find the name of the script to execute, if we want to run the scripts instead.
+
+NOTE: I will show the output of `podman build...`. If you are using `docker build ...` instead, your output may slightly vary.
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --tag hello-world:without-target \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --tag hello-world:without-target \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-without-target.sh
+----
+====
+
+If we run this command, we see the following output:
+
+[source, bash]
+----
+$ podman build \
+  --file Containerfile \
+  --tag hello-world:without-target \
+  .
+[1/5] STEP 1/5: FROM eclipse-temurin:17.0.6_10-jdk-alpine AS builder
+[1/5] STEP 2/5: RUN mkdir /project
+--> Using cache 6d1d5133407f9833e5e70e699a102f432dd84f6243990dc594dffd0539dcac79
+--> 6d1d5133407
+[1/5] STEP 3/5: WORKDIR /project
+--> Using cache 55c0d34b8a61073be307bf1e06e0fad20e57cb01b01a4413dc837b60e0c1d81e
+--> 55c0d34b8a6
+[1/5] STEP 4/5: COPY . .
+--> f7180ec3d7b
+[1/5] STEP 5/5: RUN ./mvnw package
+<a lot of output from maven>
+--> a92c84ac4bd
+[5/5] STEP 1/3: FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:1.15 AS ubi-runner
+[5/5] STEP 2/3: COPY   --from=builder   --chmod=444   /project/target/*.jar app.jar
+--> 2189a7b6007
+[5/5] STEP 3/3: ENTRYPOINT [ "java", "-jar", "app.jar" ]
+[5/5] COMMIT hello-world:without-target
+--> 13679de984e
+Successfully tagged localhost/hello-world:without-target
+13679de984e239b041060b38b6cbacde444b9baa6830a77b749fa233d0f9c939
+----
+
+We note that fist, the `builder`-stage is executed. This is also indicated by the `[1/5]` at the start of the lines, denoting the first of five defined stages. After the final step of the `builder`-stage is executed, the build continues with first step of the `ubi-runner` stage (the fifth stage, hence the `[5/5]`) is executed. That is curious. So stages 2 to 4 were skipped. This is because we built the containerfile without specifying the stage we wanted to be built. Thus, the last stage was built by default. And since the last stage depended on the `builder`-stage, this stage was built as well.
+
+We can verify that the image works as expected by running
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker run --rm hello-world:without-target
+----
+
+podman::
++
+[source, bash]
+----
+podman run --rm hello-world:without-target
+----
+====
+
+resulting in
+
+[source, bash]
+----
+$ podman run --rm hello-world:without-target
+Hello, world!
+----
+
+Okay, but what about the other stages? How can we build those? We can pass along the `--target=<stage>` flag to the `[docker|podman] build` command to specify which stage we want to build:
+
+.Build Alpine JDK
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --target alpine-jdk-runner \
+  --tag hello-world:alpine-jdk \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --target alpine-jdk-runner \
+  --tag hello-world:alpine-jdk \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-alpine-jdk.sh
+----
+====
+
+.Build Alpine
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --target alpine-runner \
+  --tag hello-world:alpine \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --target alpine-runner \
+  --tag hello-world:alpine \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-alpine.sh
+----
+====
+
+.Build Distroless
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --target distroless-runner \
+  --tag hello-world:distroless \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --target distroless-runner \
+  --tag hello-world:distroless \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-distroless.sh
+----
+====
+
+.Build UBI
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --target ubi-runner \
+  --tag hello-world:ubi \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --target ubi-runner \
+  --tag hello-world:ubi \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-ubi.sh
+----
+====
+
+[NOTE]
+====
+On the Images being used:
+
+In this example, we are using four different base images. The following table gives a basic overview of each image
+
+[%headers,cols=3*]
+|===
+|Image
+|Maintainer
+|Comment
+
+a|link:https://hub.docker.com/_/eclipse-temurin[" `eclipse-temurin:jdk/jre` (`hub.docker.com`)", window=_blank]
+a|link:https://www.eclipse.org/org/foundation/["Eclipse Foundation (`eclipse.org`)", window=_blank]
+a|Official JRE- and JDK-builds from the link:https://projects.eclipse.org/projects/adoptium.temurin["Eclipse Temurin Project (`projects.eclipse.org`)", window=_blank].
+
+a|link:https://console.cloud.google.com/gcr/images/distroless/global/java17[" `distroless/java17` (`console.cloud.google.com`)", window=_blank]
+a| link:https://www.google.com/["Google (`google.com`)", window=_blank]
+a| Google's minimal image for Java. No tools, no shell.
+
+a|link:https://catalog.redhat.com/software/containers/ubi8/openjdk-17-runtime/618bdc5f843af1624c4e4ba8[" `ubi8/openjdk-17-runtime`, (`catalog.redhat.com`)", window=_blank]
+a|link:https://www.redhat.com/["Red Hat (`redhat.com`)", window=_blank
+]
+a|Red Hat's Universal Base Image (UBI) for Java 17. Tools and shell
+|===
+====
+
+When we build one of the above images, we see the following (or similar) output:
+
+[source, bash]
+----
+$ podman build \
+  --file Containerfile \
+  --target alpine-runner \
+  --tag hello-world:alpine \
+  .
+[1/3] STEP 1/5: FROM eclipse-temurin:17.0.6_10-jdk-alpine AS builder
+[1/3] STEP 2/5: RUN mkdir /project
+--> Using cache 6d1d5133407f9833e5e70e699a102f432dd84f6243990dc594dffd0539dcac79
+--> 6d1d5133407
+[1/3] STEP 3/5: WORKDIR /project
+--> Using cache 55c0d34b8a61073be307bf1e06e0fad20e57cb01b01a4413dc837b60e0c1d81e
+--> 55c0d34b8a6
+[1/3] STEP 4/5: COPY . .
+--> Using cache 44ef22ed349c7259202b83017e5fcba565968249f1d0317664540afa29ec44c1
+--> 44ef22ed349
+[1/3] STEP 5/5: RUN ./mvnw package
+--> Using cache 21f9b27bf7034e325ff4abd64d35d9684306b3f73784d971968ea263a75ddebd
+--> 21f9b27bf70
+[3/3] STEP 1/3: FROM eclipse-temurin:17.0.6_10-jre-alpine AS alpine-runner
+[3/3] STEP 2/3: COPY   --from=builder   --chmod=444   /project/target/*.jar app.jar
+--> b7572d1393d
+[3/3] STEP 3/3: ENTRYPOINT [ "java", "-jar", "app.jar" ]
+[3/3] COMMIT hello-world:alpine
+--> 0632fa056f9
+Successfully tagged localhost/hello-world:alpine
+0632fa056f97ad446cc891e297bc2af66fcad539bb4c68fb04b26a916ab8b599
+----
+
+We see that for the `builder`-stage, the layers are not rebuild, but the cached layers are reused. This re-usage of existing layers is another benefit of multistage builds. Only when we enter the `alpine-runner`-stage are new layers produced.
+
+I encourage you, the reader, to build all images.
+
+== Inspecting 🧐 the images
+
+When we have built all images, we can take a look at them and draw some conclusions:
+
+[source, bash]
+----
+$ podman image ls
+REPOSITORY                                          TAG                   IMAGE ID      CREATED        SIZE
+...
+localhost/hello-world                               distroless            1efcda722df9  About a minute ago  234 MB
+localhost/hello-world                               alpine-jdk            c74add37963c  About a minute ago  388 MB
+localhost/hello-world                               alpine                0632fa056f97  4 minutes ago       171 MB
+localhost/hello-world                               without-target        d75c47dff5b2  5 minutes ago       364 MB
+localhost/hello-world                               ubi                   d75c47dff5b2  5 minutes ago       364 MB
+...
+----
+
+First thing we see is that the `without-target`- and `ubi`-image reference the same image id. Since both commands build the same stage, this is not surprising.
+
+Next, we see that the `alpine-jdk`-image is the largest. This is not surprising since it:
+
+* carries a maven installation, as well as
+* a JDK instead of a JRE
+
+What was surprising, at least for me, was that the `alpine`-image is smaller than the `distroless` image. Finally, we can see that Red Hat's UBI is, besides the largest `jre`-based image. This is not surprising since it has also the most tools installed.
+
+== Conclusion
+In this article, we learned what multistage containerfiles are, and when and how to use them. We also built some images from a multistage containerfile.

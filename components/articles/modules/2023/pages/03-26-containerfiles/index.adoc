@@ -25,6 +25,10 @@ a|
 a|
 - Changed git clone url to HTTPS protocol
 - Added Docker's `buildx` as prerequisite
+
+|2023-04-02
+a|
+* Flipped arrows in xref:plant-common-layers[Figure 2] to indicate that a layer does not determine its successor, but its predecessor (just like commits, where a commit defines its parent-commit)
 |===
 ====
 
