@@ -1,7 +1,7 @@
 = Containers 101: Running ▶️ containers
 Marco Bungart
 :page-created: 2023-03-29
-:page-last-modified: 2023-03-30
+:page-last-modified: 2023-04-03
 :keywords: containers
 
 .Changelog
@@ -12,13 +12,16 @@ Marco Bungart
 |Date
 |Changes
 
-
 |2023-03-30
 a|
 * Fixed link of git clone url
 * changed git clone url to HTTPS protocol
 * Fixed typos
 * Added Docker's `buildx` as prerequisite
+
+|2023-04-03
+a|
+* Prefixed all images from dockerhub with `docker.io/`
 |===
 ====
 
@@ -44,7 +47,7 @@ We start by taking a look at the containerfile:
 [#container-file]
 [source, docker]
 ----
-FROM ubuntu:22.04
+FROM docker.io/ubuntu:22.04
 LABEL \
   org.opencontainers.image.authors="Marco Bungart <mail@example.com>" \
   org.opencontainers.image.licenses=Apache-2.0 \
@@ -294,7 +297,7 @@ docker::
 docker run \
   --detach \
   --entrypoint /bin/bash \
-  ubuntu:22.04  \
+  docker.io/ubuntu:22.04  \
     '-c' \
     'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
 ----
@@ -306,7 +309,7 @@ podman::
 podman run \
   --detach \
   --entrypoint /bin/bash \
-  ubuntu:22.04  \
+  docker.io/ubuntu:22.04  \
     '-c' \
     'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
 ----
@@ -319,7 +322,7 @@ This container will run in an endless loop, producing a log every second. When w
 $ podman run \
   --detach \
   --entrypoint /bin/bash \
-  ubuntu:22.04  \
+  docker.io/ubuntu:22.04  \
     '-c' \
     'while (true); do echo "$(date --iso-8601=seconds) I am running"; sleep 1; done'
 84f7113d3e42d5ae8b757b33487b5380a15799d233cf107a776d7fadf673aecf
