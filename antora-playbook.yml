@@ -6,7 +6,7 @@ antora:
 
 site:
   title: Marco Bungart
-  start_page: about::index.adoc
+  start_page: about:ROOT:index.adoc
   url: https://turing85.github.io
   robots: allow
 
