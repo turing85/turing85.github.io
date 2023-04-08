@@ -1,7 +1,7 @@
 = Advanced containers: multistage containerfiles 🎭
 Marco Bungart
 :page-created: 2023-04-02
-:page-last-modified: 2023-04-03
+:page-last-modified: 2023-04-09
 :keywords: containers
 
 .Changelog
@@ -15,6 +15,10 @@ Marco Bungart
 |2023-04-03
 a|
 * Prefixed all images from dockerhub with `docker.io/`
+
+|2023-04-09
+a|
+* Fixed some formatting
 |===
 ====
 
@@ -26,7 +30,7 @@ Another common example: we need the same application in multiple configurations.
 In those situations, we can use multistage containerfiles to organize our images.
 
 == Preparation
-If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docs.docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podman.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/[" `buildx` (`docs.docker.com`)", window=_blank].
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docs.docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podman.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/["``buildx`` (`docs.docker.com`)", window=_blank].
 
 == The setup
 For this article, we are going to use the code in link:https://github.com/turing85/article-2023-04-02-multistage["this `github.com` repository", window=_blank]:
@@ -349,15 +353,15 @@ In this example, we are using four different base images. The following table gi
 |Maintainer
 |Comment
 
-a|link:https://hub.docker.com/_/eclipse-temurin[" `eclipse-temurin:jdk/jre` (`hub.docker.com`)", window=_blank]
+a|link:https://hub.docker.com/_/eclipse-temurin["``eclipse-temurin:jdk/jre`` (`hub.docker.com`)", window=_blank]
 a|link:https://www.eclipse.org/org/foundation/["Eclipse Foundation (`eclipse.org`)", window=_blank]
 a|Official JRE- and JDK-builds from the link:https://projects.eclipse.org/projects/adoptium.temurin["Eclipse Temurin Project (`projects.eclipse.org`)", window=_blank].
 
-a|link:https://console.cloud.google.com/gcr/images/distroless/global/java17[" `distroless/java17` (`console.cloud.google.com`)", window=_blank]
+a|link:https://console.cloud.google.com/gcr/images/distroless/global/java17["``distroless/java17`` (`console.cloud.google.com`)", window=_blank]
 a| link:https://www.google.com/["Google (`google.com`)", window=_blank]
 a| Google's minimal image for Java. No tools, no shell.
 
-a|link:https://catalog.redhat.com/software/containers/ubi8/openjdk-17-runtime/618bdc5f843af1624c4e4ba8[" `ubi8/openjdk-17-runtime`, (`catalog.redhat.com`)", window=_blank]
+a|link:https://catalog.redhat.com/software/containers/ubi8/openjdk-17-runtime/618bdc5f843af1624c4e4ba8["``ubi8/openjdk-17-runtime``, (`catalog.redhat.com`)", window=_blank]
 a|link:https://www.redhat.com/["Red Hat (`redhat.com`)", window=_blank
 ]
 a|Red Hat's Universal Base Image (UBI) for Java 17. Tools and shell

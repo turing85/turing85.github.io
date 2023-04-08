@@ -1,7 +1,7 @@
 = Antora: Documentation made simple
 Marco Bungart
 :page-created: 2023-03-22
-:page-last-modified: 2023-04-01
+:page-last-modified: 2023-04-09
 :keywords: documentation, asciidoc, antora
 
 .Changelog
@@ -16,6 +16,10 @@ Marco Bungart
 |2023-04-01
 a|
 * Updated listing 1 to reflect the change in directory structure
+
+|2023-04-09
+a|
+* Fixed some formatting
 |===
 ====
 
@@ -360,7 +364,7 @@ While somewhat lengthy, the file is actually rather straight forward. The `antor
 Finally, there is the `content` section. This is the glue where all modules ar bound together. Each entry consists of a URL, a list of branches and a start path. The URL must point to a git repository. As we can see: it can point to the repository we are currently in. But it can also point to other repositories. This is the magic that allows us to bind together documentation from different repositories. A more complete example can be found in the link:https://github.com/quarkiverse/quarkiverse-docs/blob/main/antora-playbook.yml["Antora playbook for all quarkus quarkiverse documentations (`github.com`)", window=_blank]. The important part is: every component that has its own `antora.yml` must be listed here, with the URL pointing to the git repository it resides in, and the `start_path` holding the directory containing the `antora.yml`, relative to the directory.
 
 === Building the pages
-We still have to actually generate the HTML pages from the Asciidoc documents. For this, we use link:https://www.npmjs.com/[" `npm` (`nmpjs.com`)", window=_blank]. Initially, we have to install the Antora npm package. A guide can be found in link:https://docs.antora.org/antora/latest/install/install-antora/["The official Antora documentation (`docs.antora.org`)", window=_blank]. When we use Antora extensions, the extensions have be installed through `npm`. For the `lunr` extension, the installation command looks like this:
+We still have to actually generate the HTML pages from the Asciidoc documents. For this, we use link:https://www.npmjs.com/["``npm`` (`nmpjs.com`)", window=_blank]. Initially, we have to install the Antora npm package. A guide can be found in link:https://docs.antora.org/antora/latest/install/install-antora/["The official Antora documentation (`docs.antora.org`)", window=_blank]. When we use Antora extensions, the extensions have be installed through `npm`. For the `lunr` extension, the installation command looks like this:
 
 .`npm` command to install `lunr`
 [source, bash]
