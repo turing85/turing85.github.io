@@ -19,6 +19,7 @@ a|
 |2023-04-09
 a|
 * Fixed some formatting
+* Replace all `[source, docker]` with `[source, dockerfile]`
 |===
 ====
 
@@ -45,7 +46,7 @@ cd article-2023-04-02-multistage
 We start by taking a look at the containerfile:
 
 .A multistage containerfile
-[source, docker]
+[source, dockerfile]
 ----
 FROM docker.io/eclipse-temurin:17.0.6_10-jdk-alpine AS builder <1>
 RUN mkdir /project

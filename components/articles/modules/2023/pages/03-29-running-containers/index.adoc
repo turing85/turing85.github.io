@@ -26,6 +26,7 @@ a|
 |2023-04-09
 a|
 * Fixed some formatting
+* Replace all `[source, docker]` with `[source, dockerfile]`
 |===
 ====
 
@@ -49,7 +50,7 @@ We start by taking a look at the containerfile:
 
 .The containerfile
 [#container-file]
-[source, docker]
+[source, dockerfile]
 ----
 FROM docker.io/ubuntu:22.04
 LABEL \
@@ -508,7 +509,7 @@ baz
 
 We see that the text after the image name is passed along to the entrypoint process, as parameter. This is also the reason why we use
 
-[source, docker]
+[source, dockerfile]
 ----
 ...
 ENTRYPOINT [ "./script.sh" ]
@@ -516,7 +517,7 @@ ENTRYPOINT [ "./script.sh" ]
 
 instead of
 
-[source, docker]
+[source, dockerfile]
 ----
 ...
 ENTRYPOINT [ "/bin/bash", "-c", "./script.sh" ]

@@ -1,0 +1,35 @@
+@startuml
+
+top to bottom direction
+
+skinparam componentStyle rectangle
+
+component build-time {
+  rectangle containerfile as "    containerfile   " {
+  }
+
+  rectangle image as "container image"{
+  }
+
+  containerfile -d-> image
+  note on link
+    ""[docker|podman] build ...""
+
+    - ""ARG""s available
+    - ""ENV""s not available
+  end note
+}
+
+rectangle runtime {
+  rectangle container {
+  }
+}
+image -d-> container
+note on link
+  ""[docker|podman] run ...""
+
+  - ""ARG""s not accessible
+  - ""ENV""s available
+end note
+
+@enduml

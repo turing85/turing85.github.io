@@ -1,0 +1,714 @@
+= Advanced containers: Let's ``ARG``ue 💬 about the ``ENV``ironment 🌳
+Marco Bungart
+:page-created: 2023-04-09
+:keywords: containers
+
+== Motivation
+In the xref:04-02-multistage-containerfiles/index.adoc[last article], we talked about multistage containerfiles. This concept allows us to separate certain parts in specific containers, and access data from other containers, as we need to. But there are still some things to be desired. For example, if we want to create a container for our java application, we might want to build and run the application with the exact same java version. Remember that we want to use a JDK for building the application, but only a JRE to run it. Thus, we need to use different container images for those two stages.
+
+Furthermore, we have seen that we can pass along arguments from the `docker run...` command to the `ENTRYPOINT` of the container. But what if the application does not accept command line arguments, but is written to be configured through environment variables?
+
+This is where the link:https://docs.docker.com/engine/reference/builder/#arg["``ARG`` (`docs.docker.com`)", window=_blank]- and link:https://docs.docker.com/engine/reference/builder/#env["``ENV`` (`docs.docker.com`)", window=_blank]-instructions come into play. In this article, we will discuss the behaviour of those two instructions, their commonalities, their differences and when to use which.
+
+== Preparation
+If you want to follow along, you need a means to build container images from containerfiles as well as run containers. I recommend to either use link:https://docs.docker.com/get-docker/["Docker (`docs.docker.com`)", window=_blank] or link:https://podman.io/["Podman (`podman.io`)", window=_blank]. If you are using docker, you also need to install link:https://docs.docker.com/build/install-buildx/["``buildx`` (`docs.docker.com`)", window=_blank].
+
+== The setup
+For this article, we are going to use the code in link:https://github.com/turing85/article-2023-04-09-arg-env["this `github.com` repository", window=_blank]:
+
+.Checkout the demo code
+[source, bash]
+----
+git clone https://github.com/turing85/article-2023-04-09-arg-env
+cd article-2023-04-09-arg-env
+----
+
+The repository has two subdirectories, one named `bash-example`, and one named `java-example`. We will first explore the `bash-example` to get a theoretical understanding of `ARG` and `ENV`, and then look at the `java-example` to see how they can be used in practical use cases.
+
+== The `bash-example`
+As usual, we start by inspecting the containerfile:
+
+.The `bash-example/Containerfile`
+[source, dockerfile]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+# ARG TAG
+# ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+# TAG=${TAG:-<empty>}\n\
+# TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+
+The first thing we notice is that the containerfile does not begin with a `FROM` or a comment, but with an `ARG`. Back in xref:03-26-containerfiles/index.adoc[], we mentioned in a footnote that there are containerfiles that do not start with a  `FROM`. This is the exception we mentioned. For now, we ignore the exact semantics of `ARG` and `FROM`, and continue reading the containerfile.
+
+Second, we notice that both `ARG` and `ENV` bind some name to some value.
+
+Next we notice that the `ARG TAG` is used in the `FROM` clause. The syntax `${SOME_VARIABLE:-default_value}` is borrowed from link:https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html["``bash``'s parameter expansion (`gnu.org`)", window=_blank], so if `TAG` is unset, the value `22.04` is used instead.
+
+.Illustrating the difference of `ARG` and `ENV`
+[#plant-arg-env]
+[plantuml, link=self, role=right]
+----
+include::2023:attachment$04-09-containers-arg-and-env/arg-and-env-difference.puml[]
+----
+
+We will skip all commented-out lines for now, so the last thing to discuss is the `ENTRYPOINT`. It is a multiline bash script that:
+
+1. ``cat``s the content of file `/etc/lsb-release`, which will show us some information of the exact Ubuntu version used, and
+2. prints the value of environment variable `BAR`, or `<empty>`, if `BAR` has no value.
+
+=== `ARG` vs. `ENV`: build-time vs. runtime
+xref:plant-arg-env[Figure 1] illustrates the difference between `ARG` and `ENV`. The main difference is when they are available. All ``ARG``s are evaluated at build-time, i.e. when we execute ``[dokcer|podman] build ...``. In particular, we can use ``ARG``s in ``FROM``s, ``RUN``, ``COPY``s, ... .  In other words, ``ARG``s are ideal for values that are needed at build-time (e.g. tags of base images to use, package-version to install, git repositories and exact commit ids to checkout, ...).
+
+For `ENV` values, it is the other way around. We cannot use them at build-time since they are runtime-overridable. They are a perfect fit for configuration done by the user of the image. For example, an image providing a database service, defines the username and password for the database user most likely as `ENV`, giving the user of the image the possibility to set it at runtime, when the container is started.
+
+[CAUTION]
+====
+As tempting as it might be, we should never store any kind of secret in an `ARG`. We run the risk of leaking secret to everyone who has access to the image. There are dedicated solutions to handle secrets, which will not discuss in this article.
+====
+
+=== Building and running the image
+Let us start building and running the image. We will modify the `Containerfile` as we go along, so please have an editor at the ready to do the necessary modifications.
+
+We start by just building the image
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+TAG="22.04"
+docker build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+TAG="22.04"
+podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build.sh
+----
+====
+
+which results in the following output:
+
+[source, bash]
+----
+$ TAG="22.04"
+$ podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+  .
+STEP 1/3: FROM docker.io/ubuntu:22.04 <1>
+STEP 2/3: ENV BAR="bar" <2>
+--> Using cache 4a3428e34b8322d31a7842e5299a093d26fcd20cf12065023a2eebe404b296cf
+--> 4a3428e34b8
+STEP 3/3: ENTRYPOINT [ "/bin/bash", "-c",   "cat /etc/lsb-release &&  echo \"-----\nBAR=${BAR:-<empty>}\n\"" ]
+COMMIT bash-example:ubuntu-22.04
+--> 955aeab2a4e
+Successfully tagged localhost/bash-example:ubuntu-22.04
+955aeab2a4e25b55ca8d40becc228309461f278605aa69b48bc71901d58f580d
+
+----
+<1> The tag we passed in with `--build-arg`
+<2> the environment variable `BAR`, set to a default value of `"bar"`
+
+We see that the `--build-arg TAG="$\{TAG}"` (which resolves to `--build-arg TAG="22.04"`) is passed through to the `FROM` instruction and used there. This gives a convenient way to change image tags in a unified manner.
+
+When we run the image:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker run --rm \
+  bash-example:ubuntu-22.04
+----
+
+podman::
++
+[source, bash]
+----
+podman run --rm \
+  bash-example:ubuntu-22.04
+----
+====
+
+we see that the value of environment variable `BAR` is printed:
+[source, bash]
+----
+$ podman run --rm \
+  bash-example:ubuntu-22.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04
+DISTRIB_CODENAME=jammy
+DISTRIB_DESCRIPTION="Ubuntu 22.04.2 LTS"
+-----
+BAR=bar
+----
+
+This is all fine. But remembering xref:plant-arg-env[Figure 1], we know that we can change the value of `BAR`, and this is the syntax to do so:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker run \
+  --rm \
+  --env BAR=baz \
+  bash-example:ubuntu-22.04
+----
+
+podman::
++
+[source, bash]
+----
+podman run \
+  --rm \
+  --env BAR=baz \
+  bash-example:ubuntu-22.04
+----
+====
+
+resulting in:
+
+[source, bash]
+----
+$ podman run \
+  --rm \
+  --env BAR=baz \
+  bash-example:ubuntu-22.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04
+DISTRIB_CODENAME=jammy
+DISTRIB_DESCRIPTION="Ubuntu 22.04.2 LTS"
+-----
+BAR=baz
+----
+
+=== The scope of `ARG`
+Now, let us explore the somewhat more obscure part of ``ARG``s. For this, we will modify the `Containerfile` as follows:
+
+.Modified `bash-example/Containerfile`
+[tabs]
+====
+diff::
++
+[source, diff]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+# ARG TAG
+# ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+- # TAG=${TAG:-<empty>}\n\
++ TAG=${TAG:-<empty>}\n\
+# TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+
+after modification::
++
+[source, dockerfile]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+# ARG TAG
+# ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+# TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+====
+
+We build and run the image as before, and observe the following output:
+
+[source, bash]
+----
+$ TAG="22.04"
+$ podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+  .
+<output omitted>
+$ podman run --rm bash-example:ubuntu-22.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04
+DISTRIB_CODENAME=jammy
+DISTRIB_DESCRIPTION="Ubuntu 22.04.2 LTS"
+-----
+BAR=bar
+TAG=<empty>
+
+----
+
+That is strange. Argument `TAG` is empty. How come? Looking at the container again, we see that the `TAG`  `ARG` is defined __before__ the first `FROM`. This means that it is available within `FROM` instructions, but - by default - not in the image definition itself (i.e. in the part between one `FROM` instruction and the next, or between the last `FROM` instruction and the enf of the file). We can rectify the situation by reinitializing `ARG` within the image:
+
+[tabs]
+====
+diff::
++
+[source, diff]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+- # ARG TAG
++ ARG TAG
+- # ENV TAG_AS_ENV=${TAG:-22.04}
++ ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+- # TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
++ TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+
+after modification::
++
+[source, dockerfile]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+ARG TAG
+ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+====
+
+Building and running this image results in
+
+[source, bash]
+----
+$ TAG="22.04"
+$ podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+<output omitted>
+$ podman run --rm bash-example:ubuntu-22.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04
+DISTRIB_CODENAME=jammy
+DISTRIB_DESCRIPTION="Ubuntu 22.04.2 LTS"
+-----
+BAR=bar
+TAG=<empty>
+TAG_AS_ENV=22.04
+
+----
+
+This is really curious. We have "redirected" the value of `ARG TAG` to `ENV TAG_AS_ENV`, which works fine. Our `TAG` argument, however, is still empty. What is more: The `ARG TAG`-line seems superfluous. Let us comment-out the `ARG TAG`-line:
+
+[tabs]
+====
+diff::
++
+[source, diff]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+- ARG TAG
++ # ARG TAG
+ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+
+after modification::
++
+[source, dockerfile]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+# ARG TAG
+ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+====
+
+Building and running this image results seems fine:
+
+[source, bash]
+----
+$ TAG="22.04"
+$ podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+<output omitted>
+$ podman run --rm bash-example:ubuntu-22.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04
+DISTRIB_CODENAME=jammy
+DISTRIB_DESCRIPTION="Ubuntu 22.04.2 LTS"
+-----
+BAR=bar
+TAG=<empty>
+TAG_AS_ENV=22.04
+
+----
+
+`TAG_AS_ENV` seems to have the correct value. The `TAG` in the output is still `<empty>`, we delay discussion of this effect for a moment, and only focus on `TAG_AS_ENV`. If we inspect the `Containerfile` carefully, we see that we set the value of `TAG_AS_ENV` to `22.04` if `TAG` is empty:
+
+.Default value of 'TAG_AS_ENV` in `bash-example/Containerfile`:
+[source, dockerfile]
+----
+...
+ENV TAG_AS_ENV=${TAG:-22.04}
+...
+----
+
+Just to be sure, let us rebuild the image with a different tag, e.g. `20.04` and see the result:
+
+[source, bash]
+----
+$ TAG="20.04"
+$ podman build \
+  --tag bash-example:ubuntu-"${TAG}" \
+  --build-arg TAG="${TAG}" \
+  -f Containerfile \
+  .
+STEP 1/4: FROM docker.io/ubuntu:20.04
+<output omitted>
+$ podman run --rm bash-example:ubuntu-20.04
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=20.04
+DISTRIB_CODENAME=focal
+DISTRIB_DESCRIPTION="Ubuntu 20.04.5 LTS"
+-----
+BAR=bar
+TAG=<empty>
+TAG_AS_ENV=22.04
+
+----
+
+That is wrong. We set `TAG` to `20.04`. It influenced the base image correctly: the `build` command shows `ubuntu:20.04` as base and `cat /etc/lsb-release` also shows the release as `20.04`. But `TAG_AS_ENV` is `22.04`. So the default value took effect. Let us revert the change and discuss what is going on.
+
+[tabs]
+====
+diff::
++
+[source, diff]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+- # ARG TAG
++ ARG TAG
+ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+
+after modification::
++
+[source, dockerfile]
+----
+ARG TAG=""
+
+FROM docker.io/ubuntu:${TAG:-22.04}
+ENV BAR="bar"
+ARG TAG
+ENV TAG_AS_ENV=${TAG:-22.04}
+ENTRYPOINT [ "/bin/bash", "-c", \
+  "cat /etc/lsb-release &&\
+  echo \"-----\n\
+BAR=${BAR:-<empty>}\n\
+TAG=${TAG:-<empty>}\n\
+TAG_AS_ENV=${TAG_AS_ENV:-<empty>}\n\
+\"" \
+]
+----
+====
+
+To understand the behaviour, let us take a look at the link:https://docs.docker.com/engine/reference/builder/#scope["relevant documentation on ``docs.docker.com``", window=_blank]:
+
+[quote]
+____
+An `ARG` instruction goes out of scope at the end of the build stage where it was defined. To use an argument in multiple stages, each stage must include the `ARG` instruction.
+____
+
+We have to reinitialize am `ARG` in each stage we want to use it in. And why does printing the value through `echo` not work? Because it is an `ARG`, and ``ARG``s are only available at image build-time. In particular, they are not available in ``ENTRYPOINT``s and ``CMD``s.
+
+=== Gotchas
+Before we continue with the `java-example`, let us summarize what we have learned so far:
+
+1. ``ARG``s are for build-time values; ``ENV``s are for runtime values.
+2. Secrets should not be stored in ``ARG``.
+3. ``ARG``s cannot be read at runtime, but ``ENV``s can have a value from an ``ARG``.
+4. In a multistage containerfile, we have to reinitialize ``ARG``s that should be used in the given stage.
+5. ``ARG``s can be overridden through `[docker|podman] build ... --build-arg <KEY>=<VALUE> ...`.
+6. ``ENV``s can be overridden through `[docker|podman] run ... --env <KEY>=<VALUE> ...`.
+
+== The `java-example`
+Armed with our knowledge, we now tackle the `java-example`. Before we take a look at the containerfile, let us take a look at the java code:
+
+.Java code of the `java-example`
+[source, java]
+----
+package de.turing85;
+
+import java.util.Objects;
+
+public class Hello {
+  public static void main(String[] args) {
+    String name = System.getenv("GREETING"); <1>
+    if (Objects.isNull(name)) { <2>
+      name = "world";
+    }
+    System.out.printf("Hello, %s!%n", name); <3>
+  }
+}
+----
+<1> Set the value of `name` ot the value of environment variable `GREETING`. Sets it to `null` if `GREETING` is not set.
+<2> if `name` is `null`, then set it to the default value of `"world"`
+<3> Print a greeting, using `name`
+
+The behaviour can be summarized as follows:
+
+* The name can be set through the environment variable `GREETING`
+* Should the value of `name` be null, `name` will be set to `"world"`
+
+We will see why we need the environment variable approach when we build and run the image.
+
+Now that we know what the program does, let us see how the containerfile looks like.
+
+.The `java-example/containerfile`
+[source, dockerfile]
+----
+ARG TEMURIN_VERSION="" <1>
+ARG DISTROLESS_JRE_VERSION="" <2>
+ARG UBI_JRE_VERSION="" <2>
+
+ARG DEFAULT_GREETING="default"
+
+FROM docker.io/eclipse-temurin:${TEMURIN_VERSION:-17.0.6_10}-jdk-alpine AS builder <3>
+RUN mkdir /project
+WORKDIR /project
+COPY . .
+RUN ./mvnw package
+
+FROM builder AS alpine-jdk-runner
+ARG DEFAULT_GREETING="default" <4>
+ENV GREETING=${DEFAULT_GREETING} <5>
+ENTRYPOINT [ "java", "-jar", "target/article-2023-04-09-arg-env-1.0-SNAPSHOT.jar" ]
+
+FROM docker.io/eclipse-temurin:${TEMURIN_VERSION:-17.0.6_10}-jre-alpine AS alpine-runner <3>
+ARG DEFAULT_GREETING="default" <4>
+ENV GREETING=${DEFAULT_GREETING} <5>
+COPY \
+  --from=builder \
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+FROM gcr.io/distroless/java17:${DISTROLESS_JRE_VERSION:-"nonroot"} AS distroless-runner <3>
+ARG DEFAULT_GREETING="default" <4>
+ENV GREETING=${DEFAULT_GREETING} <5>
+COPY \
+  --from=builder \
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:${UBI_JRE_VERSION:-"1.15"} AS ubi-runner <3>
+ARG DEFAULT_GREETING="default" <4>
+ENV GREETING=${DEFAULT_GREETING} <5>
+COPY \
+  --from=builder \
+  --chmod=444 \
+  /project/target/*.jar app.jar
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+----
+<1> define the temurin version to use
+<2> define the concrete tag to use
+<3> Use the `ARG` in a `FROM`-instruction
+<4> Refresh `ARG` in stage
+<5> "Redirect" `ARG` to `ENV`
+
+Although this containerfile might seem daunting at first, we can make one key observation: the `*-runner` stages are mostly identical. For those of you that read the article about xref:04-02-multistage-containerfiles/index.adoc[multistage containerfiles], this containerfile should seem familiar; it is based on the contailerfile of the mentioned article.
+
+Let us start with something easy and neat: since we use the `eclipse-temurin` image for both building the application and building the `alpine-runner` image, and since the JDK- and JRE-image of `eclipse-temurin` have the same versions, we can
+
+* define the version to use in `ARG TEMURIN_VERSION`
+* and construct the image tag to use in the `FROM` clause:
+** `FROM docker.io/eclipse-temurin:${TEMURIN_VERSION:-17.0.6_10}-jdk-alpine ...` of the JDK
+** `FROM docker.io/eclipse-temurin:${TEMURIN_VERSION:-17.0.6_10}-jre-alpine` for the JRE
+
+This follows from applying what we already know about ``ARG``s and the fact that the two images have identical tags.
+
+With the knowledge we already have, we also know why we have to reinitialize `DEFAULT_GREETING` in every stage.
+
+Let us continue building and running the images
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker build \
+  --file Containerfile \
+  --target alpine-jdk-runner \
+  --tag hello-world:alpine-jdk \
+  .
+docker build \
+  --file Containerfile \
+  --target alpine-runner \
+  --tag hello-world:alpine \
+  .
+docker build \
+  --file Containerfile \
+  --target distroless-runner \
+  --tag hello-world:distroless \
+  .
+docker build \
+  --file Containerfile \
+  --target ubi-runner \
+  --tag hello-world:ubi \
+  .
+----
+
+podman::
++
+[source, bash]
+----
+podman build \
+  --file Containerfile \
+  --target alpine-jdk-runner \
+  --tag hello-world:alpine-jdk \
+  .
+podman build \
+  --file Containerfile \
+  --target alpine-runner \
+  --tag hello-world:alpine \
+  .
+podman build \
+  --file Containerfile \
+  --target distroless-runner \
+  --tag hello-world:distroless \
+  .
+podman build \
+  --file Containerfile \
+  --target ubi-runner \
+  --tag hello-world:ubi \
+  .
+----
+
+script::
++
+[source, bash]
+----
+./build-all.sh
+----
+====
+
+Since our java program reads the greeting from environment variable `GREETING` and we added this environment variable to each `-runner`-stage of the containerfile (thus to each image we build), we can now set the environment variable through the `[docker|podman] run ...` command to pass it to the program:
+
+[tabs]
+====
+docker::
++
+[source, bash]
+----
+docker run \
+  --env GREETING="there" \
+  hello-world:ubi
+----
+
+podman::
++
+[source, bash]
+----
+podman run \
+  --env GREETING="there" \
+  hello-world:ubi
+----
+====
+
+The concept of binding properties of our program to environment variables is link:https://12factor.net/config["The third factor of a 12-factor app (`12factors.net`)", window=_blank].
+
+== Conclusion
+In this article, we have learned about the `ARG` and `ENV` instruction in containerfiles. We discussed that ``ARG``s are build-time constructs, while ``ENV``s are runtime constructs. We have seen that we cannot use ``ARG``s in ``CMD``- and ``ENTRYPOINT`` instructions. We have also seen that we can "redirect" ``ARG``s to ``ENV`` to make them available at runtime. With the two containerfiles - `bash-example/Containerfile` and `java-example/Containerfile` - we gathered some practical experience with those concepts and saw how we can set both.
