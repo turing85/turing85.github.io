@@ -38,6 +38,7 @@ a|
 |2023-04-09
 a|
 * Fixed some formatting
+* Replace all `[source, docker]` with `[source, dockerfile]`
 |===
 ====
 
@@ -72,7 +73,7 @@ Now let us take a look at how to create a container from a containerfile.
 A typical containerfile looks as follows:
 
 .A typical containerfile
-[source, docker]
+[source, dockerfile]
 ----
 include::example$03-26-containerfiles/Containerfile[]
 ----
