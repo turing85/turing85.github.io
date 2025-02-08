@@ -11,8 +11,8 @@ image::https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/DEU_Koeln_COA.s
 I was born in Cologne, Germany, on "Rosenmontag" ("Shrove Monday"). But I do not really like Carneval. I love, however, Cologne. It has a rich history, reaching back well over 2000 years. Most people think that Cologne was founded by the romans as military colony, then as province under the name "_Germania Inferioer_", and finally promoted to the city _"Colonia Claudia Ara Agrippinensium_". But the history reaches back even further. And then, of course, there is the Cathedral of Cologne. It was in construction for 632 years. And, even though it is a cathedral, link:https://www.swr.de/wissen/1000-antworten/stimmt-es-dass-der-koelner-dom-sich-selbst-gehoert-100.html["it is owned by itself (`swr.de`)", window=_blank].
 
 == Profession
-.Sokoban (Source: link:https://gamefabrique.com/games/sokoban/#&gid=1&pid=pc/sokoban-02.png[`gamefabrique.com`, window=_blank])
-image::https://gamefabrique.com/storage/screenshots/pc/sokoban-02.png[Sokoban, link=self, role="right"]
+.Sokoban (Source: link:https://www.insertcoinclasicos.com/wp-content/uploads/2014/09/sokoban-original.gif[`insertcoinclasicos.com`, window=_blank])
+image::https://www.insertcoinclasicos.com/wp-content/uploads/2014/09/sokoban-original.gif[https://gamefabrique.com/storage/screenshots/pc/sokoban-02.png][Sokoban, link=self, role="right"]
 I am a Software Engineer by passion. My first contact with computers was when I was four or five years old; we had a desktop computer for a week, borrowed from a friend. My dad and I discovered link:https://en.wikipedia.org/wiki/Sokoban["Sokoban (`en.wikipedia.org`)", window=_blank]. From this moment on, I was hooked. Of course, my mind back then was all about games and playing them. But the pure idea that I could do things ("__writing code__" was not yet in my vocabulary) was something that excited me.
 
 Some time later, in elementary school, we were told to "draw what you want to become later on". I drew myself, leaning over a link:https://en.wikipedia.org/wiki/Cathode-ray_tube["Cathod-ray tube (`en.wikipedia.org`)", window=_blank], with a text underneath:
