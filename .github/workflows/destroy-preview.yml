@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
       - name: Install surge
         run: npm install --global surge
       - name: Destroy PR ${{ github.event.number }} from Surge
         run: surge teardown turing85-github-io-pr-${{ github.event.number }}-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
       - name: Delete PR status comment on success
-        uses: actions-cool/maintain-one-comment@v3.0.0
+        uses: actions-cool/maintain-one-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ github.event.number }}
